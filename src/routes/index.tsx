@@ -1,24 +1,89 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { Play } from "lucide-react";
+import { getHome } from "@/lib/tmdb.functions";
+import { Hero } from "@/components/Hero";
+import { MediaRow } from "@/components/MediaRow";
+import { useContinueWatching } from "@/lib/my-list";
+import { img } from "@/lib/tmdb";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
+const homeQuery = queryOptions({
+  queryKey: ["home"],
+  queryFn: () => getHome(),
+  staleTime: 1000 * 60 * 10,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(homeQuery),
+  head: () => ({
+    meta: [
+      { title: "Lumiere — Stream Movies & Series in HD" },
+      {
+        name: "description",
+        content:
+          "Watch trending movies and TV series on Lumiere. Browse thousands of titles, play trailers instantly and build your own watchlist.",
+      },
+      { property: "og:title", content: "Lumiere — Stream Movies & Series in HD" },
+      {
+        property: "og:description",
+        content: "Trending movies, top-rated series and instant trailers — all in one streaming home.",
+      },
+    ],
+  }),
+  component: Home,
+});
+
+function ContinueWatching() {
+  const items = useContinueWatching();
+  if (!items.length) return null;
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <section className="py-5">
+      <h2 className="mb-3 px-4 text-lg font-bold md:px-10 md:text-xl">Continue watching</h2>
+      <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-2 md:px-10">
+        {items.map((i) => (
+          <Link
+            key={`${i.media_type}-${i.id}`}
+            to="/watch/$type/$id"
+            params={{ type: i.media_type, id: String(i.id) }}
+            className="group relative w-64 shrink-0 overflow-hidden rounded-xl bg-surface shadow-poster"
+          >
+            <div className="aspect-video w-full bg-surface-2">
+              {img(i.backdrop_path, "w780") && (
+                <img src={img(i.backdrop_path, "w780")!} alt={i.title} className="h-full w-full object-cover" />
+              )}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center bg-background/40 opacity-0 transition-opacity group-hover:opacity-100">
+              <Play className="h-9 w-9 fill-current text-primary" />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background to-transparent p-3">
+              <p className="truncate text-sm font-semibold">{i.title}</p>
+              {i.episodeLabel && <p className="truncate text-xs text-muted-foreground">{i.episodeLabel}</p>}
+              <div className="mt-2 h-1 w-full rounded-full bg-border">
+                <div className="h-1 rounded-full bg-primary" style={{ width: `${Math.min(100, i.progress)}%` }} />
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Home() {
+  const { data } = useSuspenseQuery(homeQuery);
+  return (
+    <div className="pb-8">
+      <Hero items={data.trending} />
+      <div className="relative z-10 -mt-12">
+        <ContinueWatching />
+        <MediaRow title="Trending now" items={data.trending} />
+        <MediaRow title="In theatres" items={data.nowPlaying} />
+        <MediaRow title="Popular movies" items={data.popularMovies} />
+        <MediaRow title="Popular series" items={data.popularTv} />
+        <MediaRow title="Top rated movies" items={data.topMovies} />
+        <MediaRow title="Critically acclaimed series" items={data.topTv} />
+        <MediaRow title="Coming soon" items={data.upcoming} />
+      </div>
     </div>
   );
 }
