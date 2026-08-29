@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Info, Play, Film } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
-import { getStreamEmbed } from "@/lib/stream.functions";
+import { getStreamSources } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
 
 const searchSchema = z.object({
@@ -67,11 +67,12 @@ function WatchPage() {
   const currentEp = episodes.find((ep) => ep.episode_number === search.e) ?? episodes[0];
 
   const [mode, setMode] = useState<"full" | "trailer">("full");
+  const [sourceIndex, setSourceIndex] = useState(0);
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
-  const embed = useQuery({
-    queryKey: ["embed", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
+  const stream = useQuery({
+    queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
     queryFn: () =>
-      getStreamEmbed({
+      getStreamSources({
         data:
           type === "tv"
             ? { type, id, season: seasonNumber, episode: episodeNumber }
@@ -79,6 +80,12 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
+  const sources = [
+    ...(stream.data?.embed ? [{ name: "NexStream", url: stream.data.embed }] : []),
+    ...(stream.data?.sources ?? []).map((s, i) => ({ name: s.name || `Server ${i + 1}`, url: s.url })),
+  ];
+  const activeSource = sources[sourceIndex] ?? sources[0];
+  const playerUrl = activeSource?.url ?? null;
 
   return (
     <div className="min-h-screen pb-16 pt-20">
@@ -115,11 +122,12 @@ function WatchPage() {
       <div className="mt-4 bg-black">
         <div className="mx-auto aspect-video w-full max-w-6xl">
           {mode === "full" ? (
-            embed.data?.url ? (
+            playerUrl ? (
               <iframe
-                key={embed.data.url}
-                src={embed.data.url}
+                key={playerUrl}
+                src={playerUrl}
                 title={`${data.title} — full stream`}
+                referrerPolicy="origin"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="h-full w-full border-0"
@@ -128,7 +136,7 @@ function WatchPage() {
               <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
                 <Info className="h-6 w-6 text-primary" />
                 <p className="text-sm text-muted-foreground">
-                  {embed.isLoading ? "Loading player…" : embed.data?.error ?? "This title is not available to stream right now."}
+                  {stream.isLoading ? "Loading player…" : stream.data?.error ?? "This title is not available to stream right now."}
                 </p>
               </div>
             )
@@ -149,6 +157,36 @@ function WatchPage() {
           )}
         </div>
       </div>
+
+      {mode === "full" && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 px-4 md:px-10">
+          {sources.length > 1 &&
+            sources.map((s, i) => (
+              <button
+                key={s.url}
+                onClick={() => setSourceIndex(i)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  i === sourceIndex ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
+                }`}
+              >
+                {s.name || `Server ${i + 1}`}
+              </button>
+            ))}
+          {playerUrl && (
+            <a
+              href={playerUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-border bg-surface/60 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-surface-2"
+            >
+              Open player in new tab
+            </a>
+          )}
+          <span className="text-xs text-muted-foreground">
+            If the player stays blank, disable your ad blocker or open it in a new tab.
+          </span>
+        </div>
+      )}
 
       <div className="px-4 pt-6 md:px-10">
         <h1 className="text-2xl font-extrabold md:text-3xl">
