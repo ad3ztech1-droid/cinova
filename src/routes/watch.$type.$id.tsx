@@ -119,11 +119,12 @@ function WatchPage() {
       <div className="mt-4 bg-black">
         <div className="mx-auto aspect-video w-full max-w-6xl">
           {mode === "full" ? (
-            embed.data?.url ? (
+            playerUrl ? (
               <iframe
-                key={embed.data.url}
-                src={embed.data.url}
+                key={playerUrl}
+                src={playerUrl}
                 title={`${data.title} — full stream`}
+                referrerPolicy="origin"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="h-full w-full border-0"
@@ -132,7 +133,7 @@ function WatchPage() {
               <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
                 <Info className="h-6 w-6 text-primary" />
                 <p className="text-sm text-muted-foreground">
-                  {embed.isLoading ? "Loading player…" : embed.data?.error ?? "This title is not available to stream right now."}
+                  {stream.isLoading ? "Loading player…" : stream.data?.error ?? "This title is not available to stream right now."}
                 </p>
               </div>
             )
