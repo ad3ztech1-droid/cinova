@@ -67,11 +67,12 @@ function WatchPage() {
   const currentEp = episodes.find((ep) => ep.episode_number === search.e) ?? episodes[0];
 
   const [mode, setMode] = useState<"full" | "trailer">("full");
+  const [sourceIndex, setSourceIndex] = useState(0);
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
-  const embed = useQuery({
-    queryKey: ["embed", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
+  const stream = useQuery({
+    queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
     queryFn: () =>
-      getStreamEmbed({
+      getStreamSources({
         data:
           type === "tv"
             ? { type, id, season: seasonNumber, episode: episodeNumber }
@@ -79,6 +80,9 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
+  const sources = stream.data?.sources ?? [];
+  const activeSource = sources[sourceIndex] ?? sources[0];
+  const playerUrl = activeSource?.url ?? stream.data?.embed ?? null;
 
   return (
     <div className="min-h-screen pb-16 pt-20">
