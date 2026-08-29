@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Info, Play, Film } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
-import { getStreamEmbed } from "@/lib/stream.functions";
+import { getStreamSources } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
 
 const searchSchema = z.object({
