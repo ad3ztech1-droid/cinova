@@ -92,9 +92,47 @@ function WatchPage() {
         </Link>
       </div>
 
+      <div className="mt-4 flex flex-wrap gap-2 px-4 md:px-10">
+        <button
+          onClick={() => setMode("full")}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+            mode === "full" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          }`}
+        >
+          <Film className="h-4 w-4" /> {type === "tv" ? "Full episode" : "Full movie"}
+        </button>
+        <button
+          onClick={() => setMode("trailer")}
+          disabled={playable.length === 0}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
+            mode === "trailer" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          }`}
+        >
+          <Play className="h-4 w-4 fill-current" /> Trailers
+        </button>
+      </div>
+
       <div className="mt-4 bg-black">
         <div className="mx-auto aspect-video w-full max-w-6xl">
-          {active ? (
+          {mode === "full" ? (
+            embed.data?.url ? (
+              <iframe
+                key={embed.data.url}
+                src={embed.data.url}
+                title={`${data.title} — full stream`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+                className="h-full w-full border-0"
+              />
+            ) : (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
+                <Info className="h-6 w-6 text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  {embed.isLoading ? "Loading player…" : embed.data?.error ?? "This title is not available to stream right now."}
+                </p>
+              </div>
+            )
+          ) : active ? (
             <iframe
               key={active.key}
               src={`https://www.youtube-nocookie.com/embed/${active.key}?autoplay=1&rel=0&modestbranding=1`}
@@ -106,7 +144,7 @@ function WatchPage() {
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
               <Info className="h-6 w-6 text-primary" />
-              <p className="text-sm text-muted-foreground">No streamable video is available for this title yet.</p>
+              <p className="text-sm text-muted-foreground">No trailer is available for this title yet.</p>
             </div>
           )}
         </div>
