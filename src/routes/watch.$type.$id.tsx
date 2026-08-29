@@ -155,6 +155,36 @@ function WatchPage() {
         </div>
       </div>
 
+      {mode === "full" && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 px-4 md:px-10">
+          {sources.length > 1 &&
+            sources.map((s, i) => (
+              <button
+                key={s.url}
+                onClick={() => setSourceIndex(i)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  i === sourceIndex ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
+                }`}
+              >
+                {s.name || `Server ${i + 1}`}
+              </button>
+            ))}
+          {playerUrl && (
+            <a
+              href={playerUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-border bg-surface/60 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-surface-2"
+            >
+              Open player in new tab
+            </a>
+          )}
+          <span className="text-xs text-muted-foreground">
+            If the player stays blank, disable your ad blocker or open it in a new tab.
+          </span>
+        </div>
+      )}
+
       <div className="px-4 pt-6 md:px-10">
         <h1 className="text-2xl font-extrabold md:text-3xl">
           {data.title}
