@@ -66,6 +66,20 @@ function WatchPage() {
   const episodes = seasonData.data?.episodes ?? [];
   const currentEp = episodes.find((ep) => ep.episode_number === search.e) ?? episodes[0];
 
+  const [mode, setMode] = useState<"full" | "trailer">("full");
+  const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
+  const embed = useQuery({
+    queryKey: ["embed", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
+    queryFn: () =>
+      getStreamEmbed({
+        data:
+          type === "tv"
+            ? { type, id, season: seasonNumber, episode: episodeNumber }
+            : { type, id },
+      }),
+    staleTime: 1000 * 60 * 10,
+  });
+
   return (
     <div className="min-h-screen pb-16 pt-20">
       <div className="px-4 md:px-10">
