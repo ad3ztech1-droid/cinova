@@ -1,8 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, Info, Play } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Info, Play, Film } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
+import { getStreamEmbed } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
 
 const searchSchema = z.object({
@@ -64,6 +66,20 @@ function WatchPage() {
   const episodes = seasonData.data?.episodes ?? [];
   const currentEp = episodes.find((ep) => ep.episode_number === search.e) ?? episodes[0];
 
+  const [mode, setMode] = useState<"full" | "trailer">("full");
+  const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
+  const embed = useQuery({
+    queryKey: ["embed", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
+    queryFn: () =>
+      getStreamEmbed({
+        data:
+          type === "tv"
+            ? { type, id, season: seasonNumber, episode: episodeNumber }
+            : { type, id },
+      }),
+    staleTime: 1000 * 60 * 10,
+  });
+
   return (
     <div className="min-h-screen pb-16 pt-20">
       <div className="px-4 md:px-10">
@@ -76,9 +92,47 @@ function WatchPage() {
         </Link>
       </div>
 
+      <div className="mt-4 flex flex-wrap gap-2 px-4 md:px-10">
+        <button
+          onClick={() => setMode("full")}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+            mode === "full" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          }`}
+        >
+          <Film className="h-4 w-4" /> {type === "tv" ? "Full episode" : "Full movie"}
+        </button>
+        <button
+          onClick={() => setMode("trailer")}
+          disabled={playable.length === 0}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
+            mode === "trailer" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          }`}
+        >
+          <Play className="h-4 w-4 fill-current" /> Trailers
+        </button>
+      </div>
+
       <div className="mt-4 bg-black">
         <div className="mx-auto aspect-video w-full max-w-6xl">
-          {active ? (
+          {mode === "full" ? (
+            embed.data?.url ? (
+              <iframe
+                key={embed.data.url}
+                src={embed.data.url}
+                title={`${data.title} — full stream`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+                className="h-full w-full border-0"
+              />
+            ) : (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
+                <Info className="h-6 w-6 text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  {embed.isLoading ? "Loading player…" : embed.data?.error ?? "This title is not available to stream right now."}
+                </p>
+              </div>
+            )
+          ) : active ? (
             <iframe
               key={active.key}
               src={`https://www.youtube-nocookie.com/embed/${active.key}?autoplay=1&rel=0&modestbranding=1`}
@@ -90,7 +144,7 @@ function WatchPage() {
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
               <Info className="h-6 w-6 text-primary" />
-              <p className="text-sm text-muted-foreground">No streamable video is available for this title yet.</p>
+              <p className="text-sm text-muted-foreground">No trailer is available for this title yet.</p>
             </div>
           )}
         </div>
@@ -119,7 +173,7 @@ function WatchPage() {
             {playable.map((v) => (
               <button
                 key={v.key}
-                onClick={() => navigate({ search: (prev) => ({ ...prev, v: v.key }) })}
+                onClick={() => { setMode("trailer"); navigate({ search: (prev) => ({ ...prev, v: v.key }) }); }}
                 className={`w-56 shrink-0 rounded-xl border p-3 text-left transition-colors ${
                   active?.key === v.key ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
                 }`}
