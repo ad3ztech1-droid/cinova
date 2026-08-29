@@ -80,9 +80,12 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
-  const sources = stream.data?.sources ?? [];
+  const sources = [
+    ...(stream.data?.embed ? [{ name: "NexStream", url: stream.data.embed }] : []),
+    ...(stream.data?.sources ?? []).map((s, i) => ({ name: s.name || `Server ${i + 1}`, url: s.url })),
+  ];
   const activeSource = sources[sourceIndex] ?? sources[0];
-  const playerUrl = activeSource?.url ?? stream.data?.embed ?? null;
+  const playerUrl = activeSource?.url ?? null;
 
   return (
     <div className="min-h-screen pb-16 pt-20">
