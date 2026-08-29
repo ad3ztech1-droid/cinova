@@ -173,7 +173,7 @@ function WatchPage() {
             {playable.map((v) => (
               <button
                 key={v.key}
-                onClick={() => navigate({ search: (prev) => ({ ...prev, v: v.key }) })}
+                onClick={() => { setMode("trailer"); navigate({ search: (prev) => ({ ...prev, v: v.key }) }); }}
                 className={`w-56 shrink-0 rounded-xl border p-3 text-left transition-colors ${
                   active?.key === v.key ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
                 }`}
