@@ -68,6 +68,23 @@ function WatchPage() {
 
   const [mode, setMode] = useState<"full" | "trailer">("full");
   const [sourceIndex, setSourceIndex] = useState(0);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    } else if (playerRef.current) {
+      // iOS Safari lacks element fullscreen; fall back to the iframe's own controls.
+      await playerRef.current.requestFullscreen?.().catch(() => {});
+    }
+  };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
   const stream = useQuery({
     queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
