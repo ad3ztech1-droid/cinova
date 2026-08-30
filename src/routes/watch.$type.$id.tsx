@@ -136,8 +136,21 @@ function WatchPage() {
         </button>
       </div>
 
-      <div className="mt-4 bg-black">
-        <div className="mx-auto aspect-video w-full max-w-6xl">
+      <div className="mt-4 bg-black md:px-0">
+        <div
+          ref={playerRef}
+          className={`relative mx-auto w-full bg-black ${
+            isFullscreen ? "flex h-full w-full items-center" : "aspect-video max-w-6xl"
+          }`}
+        >
+          <button
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? "Exit full screen" : "Watch full screen"}
+            className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-black/90"
+          >
+            {isFullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
+            {isFullscreen ? "Exit" : "Full screen"}
+          </button>
           {mode === "full" ? (
             playerUrl ? (
               <iframe
