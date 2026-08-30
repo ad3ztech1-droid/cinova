@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { ArrowLeft, Info, Play, Film } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Info, Play, Film, Maximize, Minimize } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
 import { getStreamSources } from "@/lib/stream.functions";
