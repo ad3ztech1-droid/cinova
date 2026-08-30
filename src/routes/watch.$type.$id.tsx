@@ -283,7 +283,7 @@ function WatchPage() {
                   currentEp?.id === ep.id ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
                 }`}
               >
-                <div className="aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+                <div className="aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (
                     <img src={img(ep.still_path, "w342")!} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
                   )}
