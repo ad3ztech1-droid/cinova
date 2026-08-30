@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { ArrowLeft, Info, Play, Film } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Info, Play, Film, Maximize, Minimize } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
 import { getStreamSources } from "@/lib/stream.functions";
@@ -68,6 +68,23 @@ function WatchPage() {
 
   const [mode, setMode] = useState<"full" | "trailer">("full");
   const [sourceIndex, setSourceIndex] = useState(0);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    } else if (playerRef.current) {
+      // iOS Safari lacks element fullscreen; fall back to the iframe's own controls.
+      await playerRef.current.requestFullscreen?.().catch(() => {});
+    }
+  };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
   const stream = useQuery({
     queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
@@ -119,8 +136,21 @@ function WatchPage() {
         </button>
       </div>
 
-      <div className="mt-4 bg-black">
-        <div className="mx-auto aspect-video w-full max-w-6xl">
+      <div className="mt-4 bg-black md:px-0">
+        <div
+          ref={playerRef}
+          className={`relative mx-auto w-full bg-black ${
+            isFullscreen ? "flex h-full w-full items-center" : "aspect-video max-w-6xl"
+          }`}
+        >
+          <button
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? "Exit full screen" : "Watch full screen"}
+            className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-black/90"
+          >
+            {isFullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
+            {isFullscreen ? "Exit" : "Full screen"}
+          </button>
           {mode === "full" ? (
             playerUrl ? (
               <iframe
@@ -253,7 +283,7 @@ function WatchPage() {
                   currentEp?.id === ep.id ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
                 }`}
               >
-                <div className="aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+                <div className="aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (
                     <img src={img(ep.still_path, "w342")!} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
                   )}
