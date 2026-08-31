@@ -158,6 +158,7 @@ function WatchPage() {
                 src={playerUrl}
                 title={`${data.title} — full stream`}
                 referrerPolicy="origin"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="h-full w-full border-0"
@@ -175,6 +176,7 @@ function WatchPage() {
               key={active.key}
               src={`https://www.youtube-nocookie.com/embed/${active.key}?autoplay=1&rel=0&modestbranding=1`}
               title={`${data.title} — ${active.name}`}
+              sandbox="allow-scripts allow-same-origin allow-presentation"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
               className="h-full w-full border-0"
