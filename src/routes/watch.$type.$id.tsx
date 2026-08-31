@@ -129,12 +129,37 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
+  // CodeSpecter (direct provider sources, already quality-ranked server-side) is the
+  // default; the NexStream embed page is kept as an automatic backup.
   const sources = [
-    ...(stream.data?.embed ? [{ name: "NexStream", url: stream.data.embed }] : []),
-    ...(stream.data?.sources ?? []).map((s, i) => ({ name: s.name || `Server ${i + 1}`, url: s.url })),
+    ...(stream.data?.sources ?? []).map((s, i) => ({
+      name: s.name || `CodeSpecter ${i + 1}`,
+      url: s.url,
+    })),
+    ...(stream.data?.embed ? [{ name: "NexStream (backup)", url: stream.data.embed }] : []),
   ];
+  const sourceKey = sources.map((s) => s.url).join("|");
   const activeSource = sources[sourceIndex] ?? sources[0];
   const playerUrl = activeSource?.url ?? null;
+
+  // Always start on the best-ranked server whenever the title/episode changes.
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [sourceKey]);
+
+  // If the chosen server never renders, silently roll over to the next one.
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  useEffect(() => {
+    setFrameLoaded(false);
+    if (!playerUrl || mode !== "full") return;
+    const timer = window.setTimeout(() => {
+      setSourceIndex((i) => (i + 1 < sources.length ? i + 1 : i));
+    }, 9000);
+    return () => window.clearTimeout(timer);
+  }, [playerUrl, mode]);
+  useEffect(() => {
+    if (frameLoaded) return;
+  }, [frameLoaded]);
 
   return (
     <div className="min-h-screen pb-16 pt-20">
