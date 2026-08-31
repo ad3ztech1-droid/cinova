@@ -8,7 +8,20 @@ const schema = z.object({
   episode: z.number().int().positive().optional(),
 });
 
-export type StreamSource = { name: string; url: string };
+export type StreamSource = { name: string; url: string; quality?: string };
+
+/** Higher score = preferred server. CodeSpecter is the primary provider. */
+const rank = (s: StreamSource): number => {
+  const n = (s.name || "").toLowerCase();
+  let score = 0;
+  if (n.includes("codespecter")) score += 100;
+  if (n.includes("embedmaster")) score += 60;
+  const q = `${s.quality ?? ""} ${s.url}`.toLowerCase();
+  if (q.includes("2160") || q.includes("4k")) score += 40;
+  else if (q.includes("1080")) score += 30;
+  else if (q.includes("720")) score += 20;
+  return score;
+};
 
 /**
  * Resolves playable stream sources from the NexStream provider.
