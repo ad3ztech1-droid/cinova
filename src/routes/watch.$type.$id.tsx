@@ -151,15 +151,15 @@ function WatchPage() {
   const [frameLoaded, setFrameLoaded] = useState(false);
   useEffect(() => {
     setFrameLoaded(false);
-    if (!playerUrl || mode !== "full") return;
+  }, [playerUrl]);
+  useEffect(() => {
+    if (frameLoaded || !playerUrl || mode !== "full") return;
+    const total = sources.length;
     const timer = window.setTimeout(() => {
-      setSourceIndex((i) => (i + 1 < sources.length ? i + 1 : i));
+      setSourceIndex((i) => (i + 1 < total ? i + 1 : i));
     }, 9000);
     return () => window.clearTimeout(timer);
-  }, [playerUrl, mode]);
-  useEffect(() => {
-    if (frameLoaded) return;
-  }, [frameLoaded]);
+  }, [frameLoaded, playerUrl, mode, sources.length]);
 
   return (
     <div className="min-h-screen pb-16 pt-20">
