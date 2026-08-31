@@ -72,17 +72,49 @@ function WatchPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    const onChange = () =>
+      setIsFullscreen(
+        Boolean(
+          document.fullscreenElement ??
+            (document as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement,
+        ),
+      );
     document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
   }, []);
 
+  // Escape also exits our CSS-based fallback fullscreen.
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !document.fullscreenElement) setIsFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isFullscreen]);
+
   const toggleFullscreen = async () => {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen().catch(() => {});
-    } else if (playerRef.current) {
-      // iOS Safari lacks element fullscreen; fall back to the iframe's own controls.
-      await playerRef.current.requestFullscreen?.().catch(() => {});
+    const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> };
+    const el = playerRef.current as (HTMLDivElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    }) | null;
+
+    if (document.fullscreenElement || (doc as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement) {
+      await (document.exitFullscreen?.() ?? doc.webkitExitFullscreen?.() ?? Promise.resolve()).catch(() => {});
+      setIsFullscreen(false);
+      return;
+    }
+    if (!el) return;
+    try {
+      await (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.() ?? Promise.reject());
+      setIsFullscreen(true);
+    } catch {
+      // iOS Safari blocks element fullscreen: fall back to a full-viewport layer.
+      setIsFullscreen(true);
     }
   };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
@@ -97,12 +129,37 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
+  // CodeSpecter (direct provider sources, already quality-ranked server-side) is the
+  // default; the NexStream embed page is kept as an automatic backup.
   const sources = [
-    ...(stream.data?.embed ? [{ name: "NexStream", url: stream.data.embed }] : []),
-    ...(stream.data?.sources ?? []).map((s, i) => ({ name: s.name || `Server ${i + 1}`, url: s.url })),
+    ...(stream.data?.sources ?? []).map((s, i) => ({
+      name: s.name || `CodeSpecter ${i + 1}`,
+      url: s.url,
+    })),
+    ...(stream.data?.embed ? [{ name: "NexStream (backup)", url: stream.data.embed }] : []),
   ];
+  const sourceKey = sources.map((s) => s.url).join("|");
   const activeSource = sources[sourceIndex] ?? sources[0];
   const playerUrl = activeSource?.url ?? null;
+
+  // Always start on the best-ranked server whenever the title/episode changes.
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [sourceKey]);
+
+  // If the chosen server never renders, silently roll over to the next one.
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  useEffect(() => {
+    setFrameLoaded(false);
+  }, [playerUrl]);
+  useEffect(() => {
+    if (frameLoaded || !playerUrl || mode !== "full") return;
+    const total = sources.length;
+    const timer = window.setTimeout(() => {
+      setSourceIndex((i) => (i + 1 < total ? i + 1 : i));
+    }, 9000);
+    return () => window.clearTimeout(timer);
+  }, [frameLoaded, playerUrl, mode, sources.length]);
 
   return (
     <div className="min-h-screen pb-16 pt-20">
@@ -139,8 +196,10 @@ function WatchPage() {
       <div className="mt-4 bg-black md:px-0">
         <div
           ref={playerRef}
-          className={`relative mx-auto w-full bg-black ${
-            isFullscreen ? "flex h-full w-full items-center" : "aspect-video max-w-6xl"
+          className={`relative w-full bg-black ${
+            isFullscreen
+              ? "fixed inset-0 z-50 h-screen max-w-none"
+              : "mx-auto aspect-video max-w-6xl"
           }`}
         >
           <button
@@ -158,6 +217,7 @@ function WatchPage() {
                 src={playerUrl}
                 title={`${data.title} — full stream`}
                 referrerPolicy="origin"
+                onLoad={() => setFrameLoaded(true)}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
