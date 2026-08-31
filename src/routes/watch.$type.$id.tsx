@@ -196,8 +196,10 @@ function WatchPage() {
       <div className="mt-4 bg-black md:px-0">
         <div
           ref={playerRef}
-          className={`relative mx-auto w-full bg-black ${
-            isFullscreen ? "flex h-full w-full items-center" : "aspect-video max-w-6xl"
+          className={`relative w-full bg-black ${
+            isFullscreen
+              ? "fixed inset-0 z-50 h-screen max-w-none"
+              : "mx-auto aspect-video max-w-6xl"
           }`}
         >
           <button
@@ -215,6 +217,7 @@ function WatchPage() {
                 src={playerUrl}
                 title={`${data.title} — full stream`}
                 referrerPolicy="origin"
+                onLoad={() => setFrameLoaded(true)}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
