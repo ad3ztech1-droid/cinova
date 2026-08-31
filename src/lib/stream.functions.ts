@@ -48,7 +48,9 @@ export const getStreamSources = createServerFn({ method: "GET" })
       });
       if (!res.ok) return { sources: [], embed, error: `Provider responded with ${res.status}.` };
       const json = (await res.json()) as { success?: boolean; sources?: StreamSource[] };
-      const sources = (json.sources ?? []).filter((s) => typeof s?.url === "string");
+      const sources = (json.sources ?? [])
+        .filter((s) => typeof s?.url === "string")
+        .sort((a, b) => rank(b) - rank(a));
       if (!sources.length) return { sources: [], embed, error: "No stream source available for this title yet." };
       return { sources, embed, error: null as string | null };
     } catch {
