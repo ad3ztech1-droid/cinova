@@ -72,17 +72,49 @@ function WatchPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    const onChange = () =>
+      setIsFullscreen(
+        Boolean(
+          document.fullscreenElement ??
+            (document as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement,
+        ),
+      );
     document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
   }, []);
 
+  // Escape also exits our CSS-based fallback fullscreen.
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !document.fullscreenElement) setIsFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isFullscreen]);
+
   const toggleFullscreen = async () => {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen().catch(() => {});
-    } else if (playerRef.current) {
-      // iOS Safari lacks element fullscreen; fall back to the iframe's own controls.
-      await playerRef.current.requestFullscreen?.().catch(() => {});
+    const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> };
+    const el = playerRef.current as (HTMLDivElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    }) | null;
+
+    if (document.fullscreenElement || (doc as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement) {
+      await (document.exitFullscreen?.() ?? doc.webkitExitFullscreen?.() ?? Promise.resolve()).catch(() => {});
+      setIsFullscreen(false);
+      return;
+    }
+    if (!el) return;
+    try {
+      await (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.() ?? Promise.reject());
+      setIsFullscreen(true);
+    } catch {
+      // iOS Safari blocks element fullscreen: fall back to a full-viewport layer.
+      setIsFullscreen(true);
     }
   };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
