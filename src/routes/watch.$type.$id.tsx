@@ -131,7 +131,7 @@ function WatchPage() {
     const save = () => {
       const elapsed = (Date.now() - start) / 1000;
       const progress = Math.max(2, Math.min(95, (elapsed / totalSecs) * 100));
-      recordWatch({
+      const entry: Omit<HistoryEntry, "watchedAt"> = {
         id,
         media_type: type,
         title: data.title,
@@ -141,8 +141,9 @@ function WatchPage() {
         vote_average: data.vote_average,
         release_date: data.release_date,
         progress,
-        episodeLabel,
-      });
+      };
+      if (episodeLabel) entry.episodeLabel = episodeLabel;
+      recordWatch(entry);
     };
     save();
     const interval = window.setInterval(save, 15000);
