@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
 import { getStreamSources } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
-import { recordWatch } from "@/lib/my-list";
+import { recordWatch, type HistoryEntry } from "@/lib/my-list";
 
 const searchSchema = z.object({
   s: z.number().int().min(1).optional(),
