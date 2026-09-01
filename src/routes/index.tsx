@@ -45,6 +45,7 @@ function ContinueWatching() {
             key={`${i.media_type}-${i.id}`}
             to="/watch/$type/$id"
             params={{ type: i.media_type, id: String(i.id) }}
+            search={i.episodeLabel && i.episodeLabel.includes("E") ? { s: Number(i.episodeLabel.split(" ")[0].replace("S", "")), e: Number(i.episodeLabel.split("E")[1].split(" —")[0]) } : {}}
             className="group relative w-64 shrink-0 overflow-hidden rounded-xl bg-surface shadow-poster"
           >
             <div className="aspect-video w-full bg-surface-2">
