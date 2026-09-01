@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
 import { getStreamSources } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
-import { recordWatch } from "@/lib/my-list";
+import { recordWatch, type HistoryEntry } from "@/lib/my-list";
 
 const searchSchema = z.object({
   s: z.number().int().min(1).optional(),
@@ -119,6 +119,39 @@ function WatchPage() {
     }
   };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
+
+  // Record into Continue Watching, updating progress while the page is open.
+  useEffect(() => {
+    const totalSecs = (data.runtime ?? (type === "tv" ? 45 : 120)) * 60;
+    const start = Date.now();
+    const episodeLabel =
+      type === "tv"
+        ? `S${seasonNumber} E${episodeNumber}${currentEp?.name ? ` — ${currentEp.name}` : ""}`
+        : undefined;
+    const save = () => {
+      const elapsed = (Date.now() - start) / 1000;
+      const progress = Math.max(2, Math.min(95, (elapsed / totalSecs) * 100));
+      const entry: Omit<HistoryEntry, "watchedAt"> = {
+        id,
+        media_type: type,
+        title: data.title,
+        overview: data.overview,
+        poster_path: data.poster_path,
+        backdrop_path: data.backdrop_path,
+        vote_average: data.vote_average,
+        release_date: data.release_date,
+        progress,
+      };
+      if (episodeLabel) entry["episodeLabel"] = episodeLabel;
+      recordWatch(entry);
+    };
+    save();
+    const interval = window.setInterval(save, 15000);
+    return () => {
+      window.clearInterval(interval);
+      save();
+    };
+  }, [type, id, seasonNumber, episodeNumber, currentEp?.name, data.title, data.overview, data.poster_path, data.backdrop_path, data.vote_average, data.release_date, data.runtime]);
   const stream = useQuery({
     queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
     queryFn: () =>
