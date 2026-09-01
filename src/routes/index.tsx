@@ -1,3 +1,4 @@
+import { Img } from "@/components/Img";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Play } from "lucide-react";
@@ -57,7 +58,7 @@ function ContinueWatching() {
           >
             <div className="aspect-video w-full bg-surface-2">
               {img(i.backdrop_path, "w780") && (
-                <img src={img(i.backdrop_path, "w780")!} alt={i.title} className="h-full w-full object-cover" />
+                <Img src={img(i.backdrop_path, "w780")} alt={i.title} className="h-full w-full object-cover" />
               )}
             </div>
             <div className="absolute inset-0 flex items-center justify-center bg-background/40 opacity-0 transition-opacity group-hover:opacity-100">
