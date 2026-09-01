@@ -24,13 +24,14 @@ const rank = (s: StreamSource): number => {
 };
 
 /**
- * Resolves playable stream sources from the NexStream provider.
+ * Resolves playable stream sources from the CodeSpecter provider.
  * The API key stays on the server; only playback URLs reach the browser.
  */
 export const getStreamSources = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => schema.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env["NEXSTREAM_API_KEY"];
+    const apiKey = process.env["CODESPECTER_API_KEY"] ?? process.env["NEXSTREAM_API_KEY"];
+
     if (!apiKey) {
       return { sources: [] as StreamSource[], embed: null as string | null, error: "Streaming provider is not configured." };
     }
