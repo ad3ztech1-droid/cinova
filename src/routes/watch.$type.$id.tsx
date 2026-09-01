@@ -1,3 +1,4 @@
+import { Img } from "@/components/Img";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -382,7 +383,7 @@ function WatchPage() {
               >
                 <div className="aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (
-                    <img src={img(ep.still_path, "w342")!} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
+                    <Img src={img(ep.still_path, "w342")} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
                   )}
                 </div>
                 <div className="min-w-0">

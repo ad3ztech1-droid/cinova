@@ -1,3 +1,4 @@
+import { Img } from "@/components/Img";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -64,13 +65,13 @@ function TitlePage() {
   return (
     <div className="pb-16">
       <div className="relative min-h-[68vh] w-full">
-        {backdrop && <img src={backdrop} alt={`${data.title} backdrop`} className="absolute inset-0 h-full w-full object-cover" />}
+        {backdrop && <Img src={backdrop} alt={`${data.title} backdrop`} className="absolute inset-0 h-full w-full object-cover" />}
         <div className="absolute inset-0 side-fade" />
         <div className="absolute inset-0 hero-fade" />
 
         <div className="relative flex min-h-[68vh] flex-col justify-end gap-6 px-4 pb-10 pt-28 md:flex-row md:items-end md:px-10">
           {poster && (
-            <img
+            <Img
               src={poster}
               alt={`${data.title} poster`}
               className="hidden w-52 rounded-xl shadow-poster md:block"
@@ -166,7 +167,7 @@ function TitlePage() {
               >
                 <div className="aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-surface-2">
                   {img(ep.still_path, "w342") && (
-                    <img src={img(ep.still_path, "w342")!} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
+                    <Img src={img(ep.still_path, "w342")} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
                   )}
                 </div>
                 <div className="min-w-0">
@@ -193,7 +194,7 @@ function TitlePage() {
               <div key={c.id} className="w-28 shrink-0 text-center">
                 <div className="aspect-square w-28 overflow-hidden rounded-full bg-surface-2">
                   {img(c.profile_path, "w185") ? (
-                    <img src={img(c.profile_path, "w185")!} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
+                    <Img src={img(c.profile_path, "w185")} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : null}
                 </div>
                 <p className="mt-2 truncate text-xs font-semibold">{c.name}</p>

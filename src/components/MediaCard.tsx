@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Star, Play } from "lucide-react";
 import { img, year, type MediaItem } from "@/lib/tmdb";
+import { Img } from "@/components/Img";
 
 export function MediaCard({ item, className = "" }: { item: MediaItem; className?: string }) {
   const poster = img(item.poster_path, "w342") ?? img(item.backdrop_path, "w500");
@@ -11,18 +12,17 @@ export function MediaCard({ item, className = "" }: { item: MediaItem; className
       className={`group relative block overflow-hidden rounded-xl bg-surface shadow-poster transition-transform duration-300 hover:z-10 hover:-translate-y-1 hover:scale-[1.03] ${className}`}
     >
       <div className="aspect-[2/3] w-full overflow-hidden bg-surface-2">
-        {poster ? (
-          <img
-            src={poster}
-            alt={`${item.title} poster`}
-            loading="lazy"
-            className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-80"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center px-2 text-center text-xs text-muted-foreground">
-            {item.title}
-          </div>
-        )}
+        <Img
+          src={poster}
+          alt={`${item.title} poster`}
+          loading="lazy"
+          className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-80"
+          fallback={
+            <div className="flex h-full items-center justify-center px-2 text-center text-xs text-muted-foreground">
+              {item.title}
+            </div>
+          }
+        />
       </div>
 
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background via-background/40 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

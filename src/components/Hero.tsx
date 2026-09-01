@@ -1,3 +1,4 @@
+import { Img } from "@/components/Img";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Play, Info, Star } from "lucide-react";
@@ -19,7 +20,7 @@ export function Hero({ items }: { items: MediaItem[] }) {
   return (
     <section className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
       {slides.map((s, i) => (
-        <img
+        <Img
           key={s.id}
           src={img(s.backdrop_path, "original") ?? ""}
           alt={`${s.title} backdrop`}
