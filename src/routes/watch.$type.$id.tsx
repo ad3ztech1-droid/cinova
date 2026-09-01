@@ -142,7 +142,7 @@ function WatchPage() {
         release_date: data.release_date,
         progress,
       };
-      if (episodeLabel) entry.episodeLabel = episodeLabel;
+      if (episodeLabel) entry["episodeLabel"] = episodeLabel;
       recordWatch(entry);
     };
     save();
