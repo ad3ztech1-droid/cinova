@@ -22,8 +22,10 @@ export function Hero({ items }: { items: MediaItem[] }) {
       {slides.map((s, i) => (
         <Img
           key={s.id}
-          src={img(s.backdrop_path, "original") ?? ""}
+          src={img(s.backdrop_path, "w1280") ?? ""}
           alt={`${s.title} backdrop`}
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchPriority={i === 0 ? "high" : "low"}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
