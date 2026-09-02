@@ -99,6 +99,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "preconnect", href: "https://image.tmdb.org", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://image.tmdb.org" },
+      { rel: "preconnect", href: "https://media.themoviedb.org", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://images.weserv.nl" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
