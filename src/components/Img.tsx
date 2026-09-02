@@ -40,14 +40,18 @@ export function Img({ src, fallback = null, alt = "", className = "", ...rest }:
     setLoaded(false);
   }, [src]);
 
-  // Watchdog: if a source neither loads nor errors within 6s, try the next one.
+  // Watchdog: if a *visible* source neither loads nor errors within 8s, try the
+  // next mirror. Off-screen lazy images are skipped — they simply haven't
+  // started downloading yet and must not burn through the mirror list.
   useEffect(() => {
     if (!current || loaded) return;
     const t = setTimeout(() => {
-      if (!ref.current?.complete || ref.current.naturalWidth === 0) {
-        setAttempt((a) => (a + 1 < sources.length ? a + 1 : a));
-      }
-    }, 6000);
+      const el = ref.current;
+      if (!el || (el.complete && el.naturalWidth > 0)) return;
+      const r = el.getBoundingClientRect();
+      const visible = r.bottom > 0 && r.top < window.innerHeight;
+      if (visible) setAttempt((a) => (a + 1 < sources.length ? a + 1 : a));
+    }, 8000);
     return () => clearTimeout(t);
   }, [current, loaded, sources.length]);
 
