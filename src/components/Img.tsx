@@ -49,7 +49,8 @@ export function Img({ src, fallback = null, alt = "", className = "", ...rest }:
       const el = ref.current;
       if (!el || (el.complete && el.naturalWidth > 0)) return;
       const r = el.getBoundingClientRect();
-      const visible = r.bottom > 0 && r.top < window.innerHeight;
+      const visible =
+        r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth && r.width > 0;
       if (visible) setAttempt((a) => (a + 1 < sources.length ? a + 1 : a));
     }, 8000);
     return () => clearTimeout(t);
