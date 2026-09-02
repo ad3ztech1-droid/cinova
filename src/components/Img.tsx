@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Resilient image element.
@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
  * image.tmdb.org, or rate limiting when many posters load at once). This
  * component silently retries the same asset through mirror hosts before
  * giving up, so the catalog keeps showing artwork instead of blank tiles.
+ * A watchdog also rolls over to the next mirror when a source simply hangs
+ * (no error event) so the page never sits on empty grey tiles.
  */
 
 const mirrorsFor = (src: string): string[] => {
@@ -26,24 +28,45 @@ type Props = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> & {
   fallback?: React.ReactNode;
 };
 
-export function Img({ src, fallback = null, alt = "", ...rest }: Props) {
+export function Img({ src, fallback = null, alt = "", className = "", ...rest }: Props) {
   const [attempt, setAttempt] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const ref = useRef<HTMLImageElement>(null);
   const sources = src ? mirrorsFor(src) : [];
+  const current = sources[attempt];
 
   useEffect(() => {
     setAttempt(0);
+    setLoaded(false);
   }, [src]);
+
+  // Watchdog: if a source neither loads nor errors within 6s, try the next one.
+  useEffect(() => {
+    if (!current || loaded) return;
+    const t = setTimeout(() => {
+      if (!ref.current?.complete || ref.current.naturalWidth === 0) {
+        setAttempt((a) => (a + 1 < sources.length ? a + 1 : a));
+      }
+    }, 6000);
+    return () => clearTimeout(t);
+  }, [current, loaded, sources.length]);
 
   if (!src || attempt >= sources.length) return <>{fallback}</>;
 
   return (
     <img
       {...rest}
-      key={sources[attempt]}
-      src={sources[attempt]}
+      ref={ref}
+      key={current}
+      src={current}
       alt={alt}
       referrerPolicy="no-referrer"
       decoding="async"
+      className={`${className} ${loaded ? "" : "animate-pulse bg-surface-2"}`}
+      onLoad={(e) => {
+        setLoaded(true);
+        rest.onLoad?.(e);
+      }}
       onError={() => setAttempt((a) => a + 1)}
     />
   );
