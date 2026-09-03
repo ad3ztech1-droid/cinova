@@ -309,9 +309,7 @@ function WatchPage() {
               Open player in new tab
             </a>
           )}
-          <span className="text-xs text-muted-foreground">
-            If the player stays blank, disable your ad blocker or open it in a new tab.
-          </span>
+          <span className="text-xs text-muted-foreground">If one server is unavailable, choose another source.</span>
         </div>
       )}
 
