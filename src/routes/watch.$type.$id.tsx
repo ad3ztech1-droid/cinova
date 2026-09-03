@@ -251,8 +251,9 @@ function WatchPage() {
                 src={playerUrl}
                 title={`${data.title} — full stream`}
                 referrerPolicy="origin"
+                referrerPolicy="origin"
                 onLoad={() => setFrameLoaded(true)}
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="h-full w-full border-0"
