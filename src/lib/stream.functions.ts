@@ -10,51 +10,60 @@ const schema = z.object({
 
 export type StreamSource = { name: string; url: string; quality?: string };
 
-/** Higher score = preferred server. CodeSpecter is the primary provider. */
-const rank = (s: StreamSource): number => {
-  const n = (s.name || "").toLowerCase();
-  let score = 0;
-  if (n.includes("codespecter")) score += 100;
-  if (n.includes("embedmaster")) score += 60;
-  const q = `${s.quality ?? ""} ${s.url}`.toLowerCase();
-  if (q.includes("2160") || q.includes("4k")) score += 40;
-  else if (q.includes("1080")) score += 30;
-  else if (q.includes("720")) score += 20;
-  return score;
-};
+/**
+ * Frameable embed players, best-first. CodeSpecter's own player is kept last
+ * because its inner host refuses cross-origin framing, so it renders blank.
+ */
+function embedServers(data: z.infer<typeof schema>): StreamSource[] {
+  const s = data.season ?? 1;
+  const e = data.episode ?? 1;
+  const isTv = data.type === "tv";
+  return [
+    {
+      name: "Server 1 · HD",
+      url: isTv ? `https://vidlink.pro/tv/${data.id}/${s}/${e}` : `https://vidlink.pro/movie/${data.id}`,
+    },
+    {
+      name: "Server 2",
+      url: isTv
+        ? `https://vidsrc.to/embed/tv/${data.id}/${s}/${e}`
+        : `https://vidsrc.to/embed/movie/${data.id}`,
+    },
+    {
+      name: "Server 3",
+      url: isTv
+        ? `https://player.videasy.net/tv/${data.id}/${s}/${e}`
+        : `https://player.videasy.net/movie/${data.id}`,
+    },
+    {
+      name: "Server 4",
+      url: isTv
+        ? `https://www.2embed.cc/embedtv/${data.id}&s=${s}&e=${e}`
+        : `https://www.2embed.cc/embed/${data.id}`,
+    },
+  ];
+}
 
 /**
- * Resolves playable stream sources from the CodeSpecter provider.
- * The API key stays on the server; only playback URLs reach the browser.
+ * Resolves playable embed players for a title. The CodeSpecter key stays on
+ * the server; only playback URLs reach the browser.
  */
 export const getStreamSources = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => schema.parse(input))
   .handler(async ({ data }) => {
     const apiKey = process.env["CODESPECTER_API_KEY"] ?? process.env["NEXSTREAM_API_KEY"];
 
-    if (!apiKey) {
-      return { sources: [] as StreamSource[], embed: null as string | null, error: "Streaming provider is not configured." };
-    }
-
     const path =
       data.type === "movie"
         ? `movie/${data.id}`
         : `tv/${data.id}/${data.season ?? 1}/${data.episode ?? 1}`;
-    const key = encodeURIComponent(apiKey);
-    const embed = `https://api.codespecters.com/embed/${path}?apikey=${key}`;
 
-    try {
-      const res = await fetch(`https://api.codespecters.com/api/${path}?apikey=${key}`, {
-        headers: { accept: "application/json" },
-      });
-      if (!res.ok) return { sources: [], embed, error: `Provider responded with ${res.status}.` };
-      const json = (await res.json()) as { success?: boolean; sources?: StreamSource[] };
-      const sources = (json.sources ?? [])
-        .filter((s) => typeof s?.url === "string")
-        .sort((a, b) => rank(b) - rank(a));
-      if (!sources.length) return { sources: [], embed, error: "No stream source available for this title yet." };
-      return { sources, embed, error: null as string | null };
-    } catch {
-      return { sources: [], embed, error: "Could not reach the streaming provider." };
+    const sources = embedServers(data);
+    if (apiKey) {
+      const key = encodeURIComponent(apiKey);
+      sources.push({ name: "CodeSpecter Player", url: `https://api.codespecters.com/embed/${path}?apikey=${key}` });
     }
+
+    return { sources, embed: null as string | null, error: null as string | null };
   });
+
