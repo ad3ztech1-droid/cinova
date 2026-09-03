@@ -11,8 +11,8 @@ const schema = z.object({
 export type StreamSource = { name: string; url: string; quality?: string };
 
 /**
- * Frameable embed players, best-first. CodeSpecter's own player is kept last
- * because its inner host refuses cross-origin framing, so it renders blank.
+ * Frameable embed players, best-first. The first provider is the most reliable
+ * at resolving newly released TMDB titles; the others remain as manual fallbacks.
  */
 function embedServers(data: z.infer<typeof schema>): StreamSource[] {
   const s = data.season ?? 1;
@@ -20,20 +20,20 @@ function embedServers(data: z.infer<typeof schema>): StreamSource[] {
   const isTv = data.type === "tv";
   return [
     {
-      name: "Server 1 · HD",
-      url: isTv ? `https://vidlink.pro/tv/${data.id}/${s}/${e}` : `https://vidlink.pro/movie/${data.id}`,
+      name: "Server 1 · Auto HD",
+      url: isTv
+        ? `https://player.videasy.net/tv/${data.id}/${s}/${e}`
+        : `https://player.videasy.net/movie/${data.id}`,
     },
     {
       name: "Server 2",
-      url: isTv
-        ? `https://vidsrc.to/embed/tv/${data.id}/${s}/${e}`
-        : `https://vidsrc.to/embed/movie/${data.id}`,
+      url: isTv ? `https://vidlink.pro/tv/${data.id}/${s}/${e}` : `https://vidlink.pro/movie/${data.id}`,
     },
     {
       name: "Server 3",
       url: isTv
-        ? `https://player.videasy.net/tv/${data.id}/${s}/${e}`
-        : `https://player.videasy.net/movie/${data.id}`,
+        ? `https://vidsrc.to/embed/tv/${data.id}/${s}/${e}`
+        : `https://vidsrc.to/embed/movie/${data.id}`,
     },
     {
       name: "Server 4",
