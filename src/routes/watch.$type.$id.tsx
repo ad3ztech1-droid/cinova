@@ -164,15 +164,13 @@ function WatchPage() {
       }),
     staleTime: 1000 * 60 * 10,
   });
-  // CodeSpecter is the only provider: direct sources first (quality-ranked
-  // server-side), with the CodeSpecter embed player as an automatic backup.
-  const sources = [
-    ...(stream.data?.sources ?? []).map((s, i) => ({
-      name: s.name || `CodeSpecter ${i + 1}`,
-      url: s.url,
-    })),
-    ...(stream.data?.embed ? [{ name: "CodeSpecter Player", url: stream.data.embed }] : []),
-  ];
+  // Multiple frameable players, best-first; auto-failover picks the next one
+  // if the current server never renders.
+  const sources = (stream.data?.sources ?? []).map((s, i) => ({
+    name: s.name || `Server ${i + 1}`,
+    url: s.url,
+  }));
+
 
   const sourceKey = sources.map((s) => s.url).join("|");
   const activeSource = sources[sourceIndex] ?? sources[0];
