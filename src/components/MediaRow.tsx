@@ -15,21 +15,21 @@ export function MediaRow({ title, items }: { title: string; items: MediaItem[] }
   if (!items.length) return null;
 
   return (
-    <section className="group/row relative py-5">
-      <div className="mb-3 flex items-end justify-between px-4 md:px-10">
-        <h2 className="text-lg font-bold md:text-xl">{title}</h2>
+    <section className="group/row relative py-8 md:py-10">
+      <div className="mb-6 flex items-end justify-between px-5 md:px-12 lg:px-16">
+        <div className="flex items-baseline gap-4"><h2 className="font-display text-3xl md:text-4xl">{title}</h2><span className="hidden text-xs uppercase tracking-[0.18em] text-muted-foreground sm:inline">Curated for you</span></div>
         <div className="hidden gap-2 md:flex">
           <button
             aria-label={`Scroll ${title} left`}
             onClick={() => scroll(-1)}
-            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:bg-surface-2 hover:text-foreground"
+            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:border-primary hover:text-primary"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             aria-label={`Scroll ${title} right`}
             onClick={() => scroll(1)}
-            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:bg-surface-2 hover:text-foreground"
+            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:border-primary hover:text-primary"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -38,13 +38,13 @@ export function MediaRow({ title, items }: { title: string; items: MediaItem[] }
 
       <div
         ref={ref}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:px-10"
+        className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:gap-5 md:px-12 lg:px-16"
       >
         {items.map((item) => (
           <MediaCard
             key={`${item.media_type}-${item.id}`}
             item={item}
-            className="w-[43vw] shrink-0 snap-start sm:w-44 md:w-48"
+            className="w-[44vw] shrink-0 snap-start sm:w-44 md:w-48 lg:w-52"
           />
         ))}
       </div>

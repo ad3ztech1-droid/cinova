@@ -3,18 +3,15 @@ import { Clapperboard } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border bg-surface/40 px-4 py-12 md:px-10">
+    <footer className="mt-16 border-t border-border bg-surface/40 px-5 py-14 md:px-12 lg:px-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:justify-between">
         <div className="max-w-sm">
           <div className="flex items-center gap-2">
             <Clapperboard className="h-5 w-5 text-primary" />
-            <span className="font-display text-base font-extrabold">
-              LUM<span className="text-gold">IERE</span>
-            </span>
+            <span className="font-display text-2xl">Lumiere</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            Stream trailers, browse full catalogues and track what you want to watch next — powered by live data
-            from The Movie Database.
+            A considered home for remarkable film and television, curated around what you want to watch next.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
