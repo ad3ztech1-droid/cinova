@@ -17,7 +17,7 @@ export function MediaRow({ title, items }: { title: string; items: MediaItem[] }
   return (
     <section className="group/row relative py-8 md:py-10">
       <div className="mb-6 flex items-end justify-between px-5 md:px-12 lg:px-16">
-        <div className="flex items-baseline gap-4"><h2 className="font-display text-3xl md:text-4xl">{title}</h2><span className="hidden text-xs uppercase tracking-[0.18em] text-muted-foreground sm:inline">Curated for you</span></div>
+        <div className="flex items-baseline gap-4"><h2 className="font-display text-3xl md:text-4xl">{title}</h2><span className="hidden text-xs uppercase text-muted-foreground sm:inline">Curated for you</span></div>
         <div className="hidden gap-2 md:flex">
           <button
             aria-label={`Scroll ${title} left`}

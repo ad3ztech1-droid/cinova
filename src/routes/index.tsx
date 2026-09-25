@@ -29,6 +29,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Trending movies, top-rated series and instant trailers — all in one streaming home.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -39,7 +41,7 @@ function ContinueWatching() {
   if (!items.length) return null;
   return (
     <section className="py-8 md:py-10">
-      <div className="mb-6 flex items-baseline gap-4 px-5 md:px-12 lg:px-16"><h2 className="font-display text-3xl md:text-4xl">Continue watching</h2><span className="hidden text-xs uppercase tracking-[0.18em] text-muted-foreground sm:inline">Pick up where you left off</span></div>
+      <div className="mb-6 flex items-baseline gap-4 px-5 md:px-12 lg:px-16"><h2 className="font-display text-3xl md:text-4xl">Continue watching</h2><span className="hidden text-xs uppercase text-muted-foreground sm:inline">Pick up where you left off</span></div>
       <div className="no-scrollbar flex gap-5 overflow-x-auto px-5 pb-2 md:px-12 lg:px-16">
         {items.map((i) => (
           <Link
