@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Menu, X, Clapperboard, Loader2 } from "lucide-react";
+import { Search, Menu, X, Loader2 } from "lucide-react";
 import { searchMedia } from "@/lib/tmdb.functions";
 import { img, year } from "@/lib/tmdb";
 import { Img } from "@/components/Img";
@@ -87,36 +87,33 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "border-b border-border bg-background/90 backdrop-blur-xl" : "bg-gradient-to-b from-background/90 to-transparent"
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "border-b border-border bg-background/95 backdrop-blur-xl" : "bg-gradient-to-b from-background/90 to-transparent"
       }`}
     >
-      <div className="flex h-16 items-center gap-4 px-4 md:h-18 md:px-10">
-        <Link to="/" className="flex shrink-0 items-center gap-2">
-          <Clapperboard className="h-6 w-6 text-primary" />
-          <span className="font-display text-lg font-extrabold tracking-tight">
-            LUM<span className="text-gold">IERE</span>
-          </span>
+      <div className="flex h-16 items-center gap-4 px-5 md:h-20 md:px-12 lg:px-16">
+        <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Lumiere home">
+          <span className="font-display text-2xl md:text-3xl">Lumiere</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="ml-5 hidden items-center gap-7 md:flex">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              activeProps={{ className: "text-foreground bg-surface-2" }}
+              activeProps={{ className: "text-foreground border-b border-primary" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-full px-3 py-1.5 text-sm font-medium transition-colors hover:text-foreground"
+              className="py-2 text-xs font-semibold transition-colors hover:text-foreground"
             >
               {l.label}
             </Link>
           ))}
         </nav>
 
-        <div ref={boxRef} className="relative ml-auto w-full max-w-xs">
+        <div ref={boxRef} className="relative ml-auto w-full max-w-[12rem] sm:max-w-xs">
           <form onSubmit={submit} className="flex items-center gap-2">
-            <div className="flex w-full items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 focus-within:border-primary/60">
+            <div className="flex w-full items-center gap-2 rounded-full border border-border bg-surface/65 px-3 py-2 backdrop-blur-md transition-colors focus-within:border-primary/60 focus-within:bg-surface">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}
@@ -127,7 +124,7 @@ export function SiteHeader() {
                 }}
                 onFocus={() => setShowSuggest(true)}
                 onKeyDown={onKeyDown}
-                placeholder="Search movies, series…"
+                placeholder="Titles, genres…"
                 aria-label="Search"
                 autoComplete="off"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
@@ -137,7 +134,7 @@ export function SiteHeader() {
           </form>
 
           {showSuggest && debounced.length > 1 && (
-            <div className="absolute right-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
+            <div className="absolute right-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
               {suggestions.length === 0 && !isFetching && (
                 <p className="px-4 py-5 text-center text-sm text-muted-foreground">No matches found.</p>
               )}

@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+## Design architecture
+- Use semantic Obsidian & Gold tokens with Instrument Serif display and Work Sans interface typography for the premium editorial cinema direction.
