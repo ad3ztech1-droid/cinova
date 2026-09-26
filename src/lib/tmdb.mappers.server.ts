@@ -108,11 +108,11 @@ export async function fetchSearch(q: string, page: number) {
 }
 
 export interface DiscoverFilters {
-  genre?: number;
-  sort?: string;
-  yearFrom?: number;
-  yearTo?: number;
-  minRating?: number;
+  genre?: number | undefined;
+  sort?: string | undefined;
+  yearFrom?: number | undefined;
+  yearTo?: number | undefined;
+  minRating?: number | undefined;
 }
 
 function mapSort(type: MediaType, sort: string) {
@@ -132,7 +132,7 @@ export async function fetchDiscover(type: MediaType, page: number, filters: Disc
     include_adult: "false",
     "vote_count.gte": filters.minRating ? 300 : 50,
   };
-  if (filters.genre) params.with_genres = filters.genre;
+  if (filters.genre) params["with_genres"] = filters.genre;
   if (filters.yearFrom) params[dateFrom] = `${filters.yearFrom}-01-01`;
   if (filters.yearTo) params[dateTo] = `${filters.yearTo}-12-31`;
   if (filters.minRating) params["vote_average.gte"] = filters.minRating;

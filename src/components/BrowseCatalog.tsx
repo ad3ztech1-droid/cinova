@@ -7,9 +7,9 @@ import type { MediaItem, MediaType } from "@/lib/tmdb";
 import { MediaCard } from "./MediaCard";
 
 export interface CatalogFilters {
-  genre?: number;
+  genre?: number | undefined;
   year: string;
-  rating?: number;
+  rating?: number | undefined;
   sort: string;
 }
 
