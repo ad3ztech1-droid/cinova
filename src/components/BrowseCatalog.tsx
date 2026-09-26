@@ -1,22 +1,110 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { ChevronDown, RotateCcw } from "lucide-react";
+import { z } from "zod";
 import { discover, getGenres } from "@/lib/tmdb.functions";
 import type { MediaItem, MediaType } from "@/lib/tmdb";
 import { MediaCard } from "./MediaCard";
 
+export interface CatalogFilters {
+  genre?: number;
+  year: string;
+  rating?: number;
+  sort: string;
+}
+
+export const defaultFilters: CatalogFilters = { year: "any", sort: "popularity.desc" };
+
+export const filterSearchSchema = z.object({
+  genre: z.coerce.number().int().positive().optional(),
+  year: z.string().optional(),
+  rating: z.coerce.number().min(0).max(10).optional(),
+  sort: z.string().max(40).optional(),
+});
+
+const yearRanges = [
+  { value: "any", label: "Any year" },
+  { value: "2020s", label: "2020s", from: 2020, to: 2029 },
+  { value: "2010s", label: "2010s", from: 2010, to: 2019 },
+  { value: "2000s", label: "2000s", from: 2000, to: 2009 },
+  { value: "1990s", label: "1990s", from: 1990, to: 1999 },
+  { value: "1980s", label: "1980s", from: 1980, to: 1989 },
+  { value: "classic", label: "1979 & earlier", from: 1900, to: 1979 },
+];
+
+const ratings = [
+  { value: undefined, label: "Any rating" },
+  { value: 8, label: "8+ exceptional" },
+  { value: 7, label: "7+ great" },
+  { value: 6, label: "6+ good" },
+  { value: 5, label: "5+ watchable" },
+];
+
 const sorts = [
   { value: "popularity.desc", label: "Most popular" },
   { value: "vote_average.desc", label: "Highest rated" },
-  { value: "primary_release_date.desc", label: "Newest" },
+  { value: "primary_release_date.desc", label: "Newest first" },
   { value: "revenue.desc", label: "Biggest hits" },
 ];
 
-export function BrowseCatalog({ type, title, subtitle }: { type: MediaType; title: string; subtitle: string }) {
-  const [genre, setGenre] = useState<number | undefined>(undefined);
-  const [sort, setSort] = useState("popularity.desc");
+function FilterSelect({
+  label,
+  value,
+  active,
+  onChange,
+  children,
+}: {
+  label: string;
+  value: string;
+  active: boolean;
+  onChange: (v: string) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="relative inline-flex items-center">
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        aria-label={label}
+        onChange={(e) => onChange(e.target.value)}
+        className={`appearance-none rounded-full border py-2 pl-4 pr-9 text-xs font-medium outline-none transition-colors focus:border-primary/70 ${
+          active
+            ? "border-primary/60 bg-surface-2 text-foreground"
+            : "border-border bg-surface text-muted-foreground hover:border-primary/30 hover:text-foreground"
+        }`}
+      >
+        {children}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-3 h-3.5 w-3.5 text-muted-foreground" />
+    </label>
+  );
+}
+
+export function BrowseCatalog({
+  type,
+  title,
+  subtitle,
+  filters,
+  onFiltersChange,
+}: {
+  type: MediaType;
+  title: string;
+  subtitle: string;
+  filters: CatalogFilters;
+  onFiltersChange: (next: CatalogFilters) => void;
+}) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<MediaItem[]>([]);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const setFilter = useCallback(
+    (patch: Partial<CatalogFilters>) => onFiltersChange({ ...filters, ...patch }),
+    [filters, onFiltersChange],
+  );
+
+  const yearRange = useMemo(() => yearRanges.find((y) => y.value === filters.year), [filters.year]);
+  const hasActiveFilters =
+    filters.genre !== undefined || filters.year !== "any" || filters.rating !== undefined || filters.sort !== "popularity.desc";
 
   const genresQuery = useQuery({
     queryKey: ["genres", type],
@@ -25,15 +113,26 @@ export function BrowseCatalog({ type, title, subtitle }: { type: MediaType; titl
   });
 
   const listQuery = useQuery({
-    queryKey: ["discover", type, genre, sort, page],
-    queryFn: () => discover({ data: { type, genre, sort, page } }),
+    queryKey: ["discover", type, filters.genre, filters.sort, filters.year, filters.rating, page],
+    queryFn: () =>
+      discover({
+        data: {
+          type,
+          genre: filters.genre,
+          sort: filters.sort,
+          yearFrom: yearRange?.from,
+          yearTo: yearRange?.to,
+          minRating: filters.rating,
+          page,
+        },
+      }),
     staleTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {
     setPage(1);
     setItems([]);
-  }, [genre, sort, type]);
+  }, [type, filters.genre, filters.sort, filters.year, filters.rating]);
 
   useEffect(() => {
     if (!listQuery.data) return;
@@ -44,77 +143,130 @@ export function BrowseCatalog({ type, title, subtitle }: { type: MediaType; titl
     });
   }, [listQuery.data]);
 
-  const canLoadMore = useMemo(
-    () => (listQuery.data ? listQuery.data.page < listQuery.data.total_pages : false),
-    [listQuery.data],
-  );
+  const canLoadMore = listQuery.data ? listQuery.data.page < listQuery.data.total_pages : false;
+  const totalLabel = listQuery.data
+    ? listQuery.data.total_pages >= 500
+      ? "10,000+"
+      : listQuery.data.total_pages * 20 > listQuery.data.results.length
+        ? `${(listQuery.data.total_pages - 1) * 20 + listQuery.data.results.length}+`
+        : `${(listQuery.data.total_pages - 1) * 20 + listQuery.data.results.length}`
+    : "";
+
+  // Infinite scroll: load the next page automatically when the sentinel enters view.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && canLoadMore && !listQuery.isFetching) {
+          setPage((p) => p + 1);
+        }
+      },
+      { rootMargin: "800px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [canLoadMore, listQuery.isFetching]);
 
   return (
-    <div className="px-4 pb-16 pt-28 md:px-10">
-      <h1 className="text-3xl font-extrabold md:text-4xl">{title}</h1>
-      <p className="mt-2 max-w-xl text-sm text-muted-foreground">{subtitle}</p>
+    <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-28 md:px-10 md:pt-36">
+      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary">Browse the collection</p>
+      <div className="mt-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+        <h1 className="font-display text-4xl md:text-5xl">{title}</h1>
+        {totalLabel && (
+          <p className="pb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">{totalLabel} titles</p>
+        )}
+      </div>
+      <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => setGenre(undefined)}
-          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-            genre === undefined ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface text-muted-foreground hover:text-foreground"
-          }`}
+      <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label="Filters">
+        <FilterSelect
+          label="Genre"
+          value={filters.genre !== undefined ? String(filters.genre) : "any"}
+          active={filters.genre !== undefined}
+          onChange={(v) => setFilter({ genre: v === "any" ? undefined : Number(v) })}
         >
-          All
-        </button>
-        {(genresQuery.data ?? []).map((g) => (
+          <option value="any">All genres</option>
+          {(genresQuery.data ?? []).map((g) => (
+            <option key={g.id} value={g.id}>
+              {g.name}
+            </option>
+          ))}
+        </FilterSelect>
+
+        <FilterSelect
+          label="Release period"
+          value={filters.year}
+          active={filters.year !== "any"}
+          onChange={(v) => setFilter({ year: v })}
+        >
+          {yearRanges.map((y) => (
+            <option key={y.value} value={y.value}>
+              {y.label}
+            </option>
+          ))}
+        </FilterSelect>
+
+        <FilterSelect
+          label="Minimum rating"
+          value={filters.rating !== undefined ? String(filters.rating) : "any"}
+          active={filters.rating !== undefined}
+          onChange={(v) => setFilter({ rating: v === "any" ? undefined : Number(v) })}
+        >
+          {ratings.map((r) => (
+            <option key={r.label} value={r.value !== undefined ? String(r.value) : "any"}>
+              {r.label}
+            </option>
+          ))}
+        </FilterSelect>
+
+        <FilterSelect
+          label="Sort by"
+          value={filters.sort}
+          active={filters.sort !== "popularity.desc"}
+          onChange={(v) => setFilter({ sort: v })}
+        >
+          {sorts.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </FilterSelect>
+
+        {hasActiveFilters && (
           <button
-            key={g.id}
-            onClick={() => setGenre(g.id)}
-            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-              genre === g.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface text-muted-foreground hover:text-foreground"
-            }`}
+            type="button"
+            onClick={() => onFiltersChange({ ...defaultFilters })}
+            className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-xs font-medium text-primary transition-colors hover:text-foreground"
           >
-            {g.name}
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset
           </button>
-        ))}
+        )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {sorts.map((s) => (
-          <button
-            key={s.value}
-            onClick={() => setSort(s.value)}
-            className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
-              sort === s.value ? "bg-surface-2 text-foreground" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {items.map((item) => (
           <MediaCard key={item.id} item={item} />
         ))}
+        {listQuery.isLoading &&
+          items.length === 0 &&
+          Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="aspect-[2/3] animate-pulse rounded-md bg-surface" aria-hidden="true" />
+          ))}
       </div>
 
-      {listQuery.isLoading && (
-        <div className="flex justify-center py-10">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
-      )}
-
       {!listQuery.isLoading && !items.length && (
-        <p className="py-16 text-center text-sm text-muted-foreground">No titles match these filters.</p>
+        <p className="py-16 text-center text-sm text-muted-foreground">
+          No titles match these filters. Try widening the year or rating.
+        </p>
       )}
 
-      {canLoadMore && (
-        <div className="mt-10 flex justify-center">
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={listQuery.isFetching}
-            className="rounded-full border border-border bg-surface px-6 py-3 text-sm font-semibold transition-colors hover:bg-surface-2 disabled:opacity-60"
-          >
-            {listQuery.isFetching ? "Loading…" : "Load more"}
-          </button>
+      <div ref={sentinelRef} className="h-px" aria-hidden="true" />
+
+      {listQuery.isFetching && items.length > 0 && (
+        <div className="flex justify-center py-8">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" role="status" aria-label="Loading more titles" />
         </div>
       )}
     </div>
