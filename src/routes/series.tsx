@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { BrowseCatalog } from "@/components/BrowseCatalog";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { BrowseCatalog, defaultFilters, filterSearchSchema, type CatalogFilters } from "@/components/BrowseCatalog";
 
 export const Route = createFileRoute("/series")({
+  validateSearch: filterSearchSchema,
   head: () => ({
     meta: [
       { title: "TV Series — Full Seasons & Episodes | Lumiere" },
@@ -13,11 +14,40 @@ export const Route = createFileRoute("/series")({
       { property: "og:description", content: "Explore series by genre and rating, with full season and episode guides." },
     ],
   }),
-  component: () => (
+  component: SeriesPage,
+});
+
+function SeriesPage() {
+  const search = Route.useSearch();
+  const navigate = useNavigate();
+
+  const filters: CatalogFilters = {
+    genre: search.genre,
+    year: search.year ?? "any",
+    rating: search.rating,
+    sort: search.sort ?? "popularity.desc",
+  };
+
+  const onFiltersChange = (next: CatalogFilters) => {
+    navigate({
+      to: "/series",
+      search: {
+        genre: next.genre,
+        year: next.year === "any" ? undefined : next.year,
+        rating: next.rating,
+        sort: next.sort === "popularity.desc" ? undefined : next.sort,
+      },
+      replace: true,
+    });
+  };
+
+  return (
     <BrowseCatalog
       type="tv"
       title="Series"
       subtitle="Binge-worthy shows with full season and episode guides, updated daily."
+      filters={filters ?? defaultFilters}
+      onFiltersChange={onFiltersChange}
     />
-  ),
-});
+  );
+}
