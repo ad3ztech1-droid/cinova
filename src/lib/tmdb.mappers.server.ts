@@ -107,14 +107,37 @@ export async function fetchSearch(q: string, page: number) {
   };
 }
 
-export async function fetchDiscover(type: MediaType, page: number, genre?: number, sort = "popularity.desc") {
-  const res = await tmdb<{ results: RawItem[]; total_pages: number; page: number }>(`/discover/${type}`, {
+export interface DiscoverFilters {
+  genre?: number;
+  sort?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  minRating?: number;
+}
+
+function mapSort(type: MediaType, sort: string) {
+  if (type === "tv" && sort.startsWith("primary_release_date")) {
+    return sort.replace("primary_release_date", "first_air_date");
+  }
+  if (type === "tv" && sort === "revenue.desc") return "vote_count.desc";
+  return sort;
+}
+
+export async function fetchDiscover(type: MediaType, page: number, filters: DiscoverFilters = {}) {
+  const dateFrom = type === "movie" ? "primary_release_date.gte" : "first_air_date.gte";
+  const dateTo = type === "movie" ? "primary_release_date.lte" : "first_air_date.lte";
+  const params: Record<string, string | number> = {
     page,
-    sort_by: sort,
-    with_genres: genre,
+    sort_by: mapSort(type, filters.sort ?? "popularity.desc"),
     include_adult: "false",
-    "vote_count.gte": 50,
-  });
+    "vote_count.gte": filters.minRating ? 300 : 50,
+  };
+  if (filters.genre) params.with_genres = filters.genre;
+  if (filters.yearFrom) params[dateFrom] = `${filters.yearFrom}-01-01`;
+  if (filters.yearTo) params[dateTo] = `${filters.yearTo}-12-31`;
+  if (filters.minRating) params["vote_average.gte"] = filters.minRating;
+
+  const res = await tmdb<{ results: RawItem[]; total_pages: number; page: number }>(`/discover/${type}`, params);
   return { results: list(res, type), total_pages: Math.min(res.total_pages, 500), page: res.page };
 }
 

@@ -26,11 +26,22 @@ export const discover = createServerFn({ method: "GET" })
         type: z.enum(["movie", "tv"]),
         genre: z.number().int().optional(),
         sort: z.string().max(40).default("popularity.desc"),
+        yearFrom: z.number().int().min(1900).max(2100).optional(),
+        yearTo: z.number().int().min(1900).max(2100).optional(),
+        minRating: z.number().min(0).max(10).optional(),
         page: z.number().int().min(1).max(500).default(1),
       })
       .parse(d),
   )
-  .handler(async ({ data }) => fetchDiscover(data.type, data.page, data.genre, data.sort));
+  .handler(async ({ data }) =>
+    fetchDiscover(data.type, data.page, {
+      genre: data.genre,
+      sort: data.sort,
+      yearFrom: data.yearFrom,
+      yearTo: data.yearTo,
+      minRating: data.minRating,
+    }),
+  );
 
 export const getGenres = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ type: z.enum(["movie", "tv"]) }).parse(d))
