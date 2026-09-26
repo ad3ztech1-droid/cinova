@@ -158,7 +158,7 @@ export function BrowseCatalog({
     if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && canLoadMore && !listQuery.isFetching) {
+        if (entries[0]?.isIntersecting && canLoadMore && !listQuery.isFetching) {
           setPage((p) => p + 1);
         }
       },
