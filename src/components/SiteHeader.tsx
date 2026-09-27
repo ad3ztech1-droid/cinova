@@ -5,6 +5,7 @@ import { Search, Menu, X, Loader2 } from "lucide-react";
 import { searchMedia } from "@/lib/tmdb.functions";
 import { img, year } from "@/lib/tmdb";
 import { Img } from "@/components/Img";
+import { InstallAppButton } from "@/components/InstallAppButton";
 
 const links = [
   { to: "/", label: "Home" },
@@ -183,6 +184,8 @@ export function SiteHeader() {
             </div>
           )}
         </div>
+
+        <InstallAppButton className="shrink-0" />
 
         <button
           className="md:hidden"

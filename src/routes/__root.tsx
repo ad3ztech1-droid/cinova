@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installShield } from "../lib/adblock";
+import { registerServiceWorker } from "../lib/pwa-register";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 
@@ -145,6 +146,7 @@ function RootComponent() {
 
   useEffect(() => {
     installShield();
+    void registerServiceWorker();
   }, []);
 
   return (
