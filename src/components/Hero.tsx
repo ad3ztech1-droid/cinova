@@ -4,15 +4,21 @@ import { Link } from "@tanstack/react-router";
 import { Play, Info, Star } from "lucide-react";
 import { img, year, type MediaItem } from "@/lib/tmdb";
 
+const SLIDE_DURATION_MS = 10000;
+
 export function Hero({ items }: { items: MediaItem[] }) {
   const slides = items.filter((i) => i.backdrop_path).slice(0, 5);
   const [index, setIndex] = useState(0);
 
+  // Hold one title on screen for 10 seconds, then bring in the next.
   useEffect(() => {
     if (slides.length < 2) return;
-    const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 9000);
-    return () => clearInterval(t);
-  }, [slides.length]);
+    const t = setTimeout(
+      () => setIndex((i) => (i + 1) % slides.length),
+      SLIDE_DURATION_MS,
+    );
+    return () => clearTimeout(t);
+  }, [index, slides.length]);
 
   const item = slides[index];
   if (!item) return null;
