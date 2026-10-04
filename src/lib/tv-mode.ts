@@ -1,6 +1,6 @@
 // TV mode: auto-detects smart TVs / TV boxes and enables remote (D-pad) navigation.
 const TV_UA =
-  /smart-?tv|smarttv|tizen|web0s|webos|netcast|hbbtv|bravia|aft[a-z]|android tv|googletv|google tv|crkey|roku|viera|philipstv|vidaa|appletv|tv safari|large screen|xbox|playstation/i;
+  /smart-?tv|smarttv|tizen|web0s|webos|netcast|hbbtv|bravia|aft[a-z]|android tv|googletv|google tv|crkey|roku|viera|philipstv|vidaa|hisense|vidaa_|appletv|tv safari|large screen|xbox|playstation/i;
 
 export function isTvDevice(): boolean {
   if (typeof window === "undefined") return false;
@@ -53,7 +53,7 @@ function move(dir: Dir) {
   }
   if (best) {
     best.focus({ preventScroll: true });
-    best.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+    try { best.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }); } catch { best.scrollIntoView(); }
   } else if (dir === "up") {
     window.scrollBy({ top: -400, behavior: "smooth" });
   } else if (dir === "down") {
@@ -62,7 +62,7 @@ function move(dir: Dir) {
 }
 
 const KEYMAP: Record<number, Dir> = { 37: "left", 38: "up", 39: "right", 40: "down" };
-const BACK_KEYS = new Set([8, 10009, 461, 27]); // Backspace, Tizen, webOS, Escape
+const BACK_KEYS = new Set([8, 10009, 461, 27, 166]); // Backspace (VIDAA), Tizen, webOS, Escape, BrowserBack
 
 let installed = false;
 export function installTvMode() {

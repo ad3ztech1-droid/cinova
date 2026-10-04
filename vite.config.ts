@@ -14,6 +14,8 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Older TV browsers (Hisense VIDAA, older Tizen/webOS) need a lower JS target.
+    build: { target: ["es2019", "chrome69", "safari12"] },
     plugins: [
       VitePWA({
         strategies: "generateSW",
