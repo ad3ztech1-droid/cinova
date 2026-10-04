@@ -161,3 +161,19 @@
 @utility shadow-glow {
   box-shadow: var(--shadow-glow);
 }
+
+/* TV mode: 10-foot UI with clear remote focus */
+html.tv { font-size: 125%; }
+html.tv *:focus { outline: none; }
+html.tv a:focus-visible, html.tv button:focus-visible, html.tv select:focus-visible,
+html.tv input:focus-visible, html.tv [tabindex]:focus-visible, html.tv iframe:focus,
+html.tv a:focus, html.tv button:focus, html.tv select:focus, html.tv input:focus {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.05);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  z-index: 5;
+  position: relative;
+}
+html.tv { cursor: none; }

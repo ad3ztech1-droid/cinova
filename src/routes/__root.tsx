@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installShield } from "../lib/adblock";
 import { registerServiceWorker } from "../lib/pwa-register";
+import { installTvMode } from "../lib/tv-mode";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 
@@ -146,6 +147,7 @@ function RootComponent() {
 
   useEffect(() => {
     installShield();
+    installTvMode();
     void registerServiceWorker();
   }, []);
 
