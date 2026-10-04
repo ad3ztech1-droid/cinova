@@ -4,33 +4,37 @@ import { Link } from "@tanstack/react-router";
 import { Play, Info, Star } from "lucide-react";
 import { img, year, type MediaItem } from "@/lib/tmdb";
 
+const SLIDE_DURATION_MS = 10000;
+
 export function Hero({ items }: { items: MediaItem[] }) {
   const slides = items.filter((i) => i.backdrop_path).slice(0, 5);
   const [index, setIndex] = useState(0);
 
+  // Hold one title on screen for 10 seconds, then bring in the next.
   useEffect(() => {
     if (slides.length < 2) return;
-    const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 9000);
-    return () => clearInterval(t);
-  }, [slides.length]);
+    const t = setTimeout(
+      () => setIndex((i) => (i + 1) % slides.length),
+      SLIDE_DURATION_MS,
+    );
+    return () => clearTimeout(t);
+  }, [index, slides.length]);
 
   const item = slides[index];
   if (!item) return null;
 
   return (
     <section className="relative h-[88vh] min-h-[620px] w-full overflow-hidden">
-      {slides.map((s, i) => (
+      {/* Only the active title is mounted, so nothing overlaps or flickers. */}
+      <div key={item.id} className="animate-fade-in absolute inset-0">
         <Img
-          key={s.id}
-          src={img(s.backdrop_path, "w1280") ?? ""}
-          alt={`${s.title} backdrop`}
-          loading={i === 0 ? "eager" : "lazy"}
-          fetchPriority={i === 0 ? "high" : "low"}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-            i === index ? "opacity-100" : "opacity-0"
-          }`}
+          src={img(item.backdrop_path, "w1280") ?? ""}
+          alt={`${item.title} backdrop`}
+          loading={index === 0 ? "eager" : "lazy"}
+          fetchPriority={index === 0 ? "high" : "low"}
+          className="h-full w-full object-cover"
         />
-      ))}
+      </div>
       <div className="absolute inset-0 side-fade" />
       <div className="absolute inset-0 hero-fade" />
 
