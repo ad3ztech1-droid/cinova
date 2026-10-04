@@ -1,11 +1,11 @@
 import { Img } from "@/components/Img";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { getHome } from "@/lib/tmdb.functions";
 import { Hero } from "@/components/Hero";
 import { MediaRow } from "@/components/MediaRow";
-import { useContinueWatching } from "@/lib/my-list";
+import { clearHistory, removeWatch, useContinueWatching } from "@/lib/my-list";
 import { img } from "@/lib/tmdb";
 
 const homeQuery = queryOptions({
