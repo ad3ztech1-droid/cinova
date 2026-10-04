@@ -77,6 +77,31 @@ export function recordWatch(entry: Omit<HistoryEntry, "watchedAt">) {
   }
 }
 
+export function removeWatch(id: number, mediaType: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(HISTORY_KEY);
+    const list: HistoryEntry[] = raw ? JSON.parse(raw) : [];
+    window.localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(list.filter((i) => !(i.id === id && i.media_type === mediaType))),
+    );
+    window.dispatchEvent(new Event("lumiere-history-change"));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function clearHistory() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(HISTORY_KEY);
+    window.dispatchEvent(new Event("lumiere-history-change"));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function useContinueWatching() {
   const [items, setItems] = useState<HistoryEntry[]>([]);
   useEffect(() => {
