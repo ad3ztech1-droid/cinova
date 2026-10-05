@@ -147,6 +147,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    document.documentElement.setAttribute("data-app-ready", "1");
     installShield();
     installTvMode();
     void registerServiceWorker();
