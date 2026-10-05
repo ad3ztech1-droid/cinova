@@ -17,6 +17,22 @@ export default defineConfig({
     // Older TV browsers (Hisense VIDAA, older Tizen/webOS) need a lower JS target.
     build: { target: ["es2019", "chrome69", "safari12"] },
     plugins: [
+      {
+        // Old TV browsers ignore every rule inside CSS @layer blocks (a blank/black page).
+        // Flatten the layers in the final CSS so those browsers still get all styles.
+        name: "flatten-css-layers",
+        apply: "build",
+        async generateBundle(_opts, bundle) {
+          const postcss = (await import("postcss")).default;
+          const layers = (await import("@csstools/postcss-cascade-layers")).default;
+          for (const file of Object.values(bundle)) {
+            if (file.type === "asset" && file.fileName.endsWith(".css")) {
+              const res = await postcss([layers()]).process(String(file.source), { from: undefined });
+              file.source = res.css;
+            }
+          }
+        },
+      },
       VitePWA({
         strategies: "generateSW",
         registerType: "autoUpdate",
