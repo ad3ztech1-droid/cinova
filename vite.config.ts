@@ -22,6 +22,7 @@ export default defineConfig({
         // Flatten the layers in the final CSS so those browsers still get all styles.
         name: "flatten-css-layers",
         apply: "build",
+        enforce: "post",
         async generateBundle(_opts, bundle) {
           const postcss = (await import("postcss")).default;
           const layers = (await import("@csstools/postcss-cascade-layers")).default;
