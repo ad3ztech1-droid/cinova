@@ -42,7 +42,7 @@ export function Hero({ items }: { items: MediaItem[] }) {
         <div className="flex items-center gap-3 text-[11px] font-semibold uppercase text-primary">
           <span className="h-7 w-px bg-primary" /> Lumiere selection
         </div>
-        <h1 className="max-w-2xl font-display text-5xl leading-[0.9] md:text-7xl lg:text-8xl">{item.title}</h1>
+        <h1 className="hero-title max-w-2xl font-display text-5xl leading-[0.9] md:text-7xl lg:text-8xl">{item.title}</h1>
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium uppercase text-muted-foreground">
           <span className="flex items-center gap-1 text-primary">
             <Star className="h-4 w-4 fill-current" /> {item.vote_average.toFixed(1)}
