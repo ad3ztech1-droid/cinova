@@ -3,9 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 // Plain old-style script so it runs on any TV browser, even ones that can't run the main app.
 const CHECK_SCRIPT = `
 (function(){
-  var out = document.getElementById('tvc-out');
-  function row(k, v){ var d=document.createElement('div'); d.style.padding='6px 0'; d.style.borderBottom='1px solid #333'; d.appendChild(document.createTextNode(k+': '+v)); out.appendChild(d); }
+  var rows = [], shown = false;
+  function paint(k, v){ var out = document.getElementById('tvc-out'); if(!out) return; var d=document.createElement('div'); d.style.padding='6px 0'; d.style.borderBottom='1px solid #333'; d.appendChild(document.createTextNode(k+': '+v)); out.appendChild(d); }
+  function row(k, v){ if (shown) paint(k, v); else rows.push([k, v]); }
   function yes(b){ return b ? 'yes' : 'NO'; }
+  window.addEventListener('error', function(e){ row('Error', (e.message || 'unknown') + ' @ ' + (e.filename || '') + ':' + (e.lineno || '')); });
   var ua = navigator.userAgent; var m = ua.match(/Chrome\\/(\\d+)/);
   row('Browser', ua);
   row('Chrome version', m ? m[1] : 'unknown');
@@ -15,9 +17,12 @@ const CHECK_SCRIPT = `
   row('fetch', yes(typeof fetch !== 'undefined'));
   row('CSS variables', yes(window.CSS && CSS.supports && CSS.supports('--a', '0')));
   row('Optional chaining', (function(){ try { new Function('var a={};return a?.b'); return 'yes'; } catch(e){ return 'NO'; } })());
-
-  setTimeout(function(){ row('Main app started', yes(document.documentElement.getAttribute('data-app-ready') === '1')); }, 4000);
-  window.addEventListener('error', function(e){ row('Error', (e.message || 'unknown') + ' @ ' + (e.filename || '') + ':' + (e.lineno || '')); });
+  // Wait until the main app has had time to start, so we don't disturb it.
+  setTimeout(function(){
+    row('Main app started', yes(document.documentElement.getAttribute('data-app-ready') === '1'));
+    shown = true;
+    for (var i = 0; i < rows.length; i++) paint(rows[i][0], rows[i][1]);
+  }, 5000);
 })();`;
 
 export const Route = createFileRoute("/tv-check")({
