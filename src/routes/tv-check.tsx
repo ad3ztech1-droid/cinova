@@ -15,7 +15,7 @@ const CHECK_SCRIPT = `
   row('fetch', yes(typeof fetch !== 'undefined'));
   row('CSS variables', yes(window.CSS && CSS.supports && CSS.supports('--a', '0')));
   row('Optional chaining', (function(){ try { new Function('var a={};return a?.b'); return 'yes'; } catch(e){ return 'NO'; } })());
-  var appOk = document.documentElement.getAttribute('data-app-ready') === '1';
+
   setTimeout(function(){ row('Main app started', yes(document.documentElement.getAttribute('data-app-ready') === '1')); }, 4000);
   window.addEventListener('error', function(e){ row('Error', (e.message || 'unknown') + ' @ ' + (e.filename || '') + ':' + (e.lineno || '')); });
 })();`;
