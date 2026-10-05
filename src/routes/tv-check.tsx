@@ -42,7 +42,7 @@ function TvCheck() {
       <p className="mt-2 text-sm text-muted-foreground">
         Take a photo of this screen and send it so the TV version can be fixed.
       </p>
-      <div id="tvc-out" className="mt-6 max-w-4xl break-all text-sm" />
+      <div id="tvc-out" className="mt-6 max-w-4xl break-all text-sm" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "" }} />
       <script dangerouslySetInnerHTML={{ __html: CHECK_SCRIPT }} />
     </div>
   );
