@@ -7,6 +7,8 @@ import {
   fetchDiscover,
   fetchGenres,
   fetchSeason,
+  fetchMoodPick,
+  fetchRecommendations,
 } from "./tmdb.mappers.server";
 
 export const getHome = createServerFn({ method: "GET" }).handler(async () => fetchHome());
