@@ -141,6 +141,37 @@ export async function fetchDiscover(type: MediaType, page: number, filters: Disc
   return { results: list(res, type), total_pages: Math.min(res.total_pages, 500), page: res.page };
 }
 
+export async function fetchMoodPick(type: MediaType, genreIds: number[]) {
+  const params: Record<string, string | number> = {
+    sort_by: "popularity.desc",
+    include_adult: "false",
+    "vote_count.gte": 200,
+    "vote_average.gte": 6,
+    with_genres: genreIds.join("|"),
+    page: 1,
+  };
+  const first = await tmdb<{ results: RawItem[]; total_pages: number }>(`/discover/${type}`, params);
+  const totalPages = Math.min(first.total_pages || 1, 8);
+  const page = 1 + Math.floor(Math.random() * totalPages);
+  const res =
+    page === 1
+      ? first
+      : await tmdb<{ results: RawItem[]; total_pages: number }>(`/discover/${type}`, { ...params, page });
+  const items = list(res, type).filter((i) => i.backdrop_path && i.overview);
+  if (!items.length) return null;
+  return items[Math.floor(Math.random() * items.length)] ?? null;
+}
+
+export async function fetchRecommendations(type: MediaType, id: number) {
+  const res = await tmdb<{ results: RawItem[] }>(`/${type}/${id}/recommendations`, { page: 1 });
+  let items = list(res, type);
+  if (!items.length) {
+    const sim = await tmdb<{ results: RawItem[] }>(`/${type}/${id}/similar`, { page: 1 });
+    items = list(sim, type);
+  }
+  return items;
+}
+
 export async function fetchGenres(type: MediaType) {
   const res = await tmdb<{ genres: Genre[] }>(`/genre/${type}/list`);
   return res.genres;

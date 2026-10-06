@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MixerRouteImport } from './routes/mixer'
 import { Route as MoviesRouteImport } from './routes/movies'
 import { Route as MyListRouteImport } from './routes/my-list'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SeriesRouteImport } from './routes/series'
+import { Route as ShuffleRouteImport } from './routes/shuffle'
 import { Route as TvCheckRouteImport } from './routes/tv-check'
 import { Route as TitleTypeIdRouteImport } from './routes/title.$type.$id'
 import { Route as WatchTypeIdRouteImport } from './routes/watch.$type.$id'
@@ -21,6 +23,11 @@ import { Route as WatchTypeIdRouteImport } from './routes/watch.$type.$id'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MixerRoute = MixerRouteImport.update({
+  id: '/mixer',
+  path: '/mixer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MoviesRoute = MoviesRouteImport.update({
@@ -43,6 +50,11 @@ const SeriesRoute = SeriesRouteImport.update({
   path: '/series',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShuffleRoute = ShuffleRouteImport.update({
+  id: '/shuffle',
+  path: '/shuffle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TvCheckRoute = TvCheckRouteImport.update({
   id: '/tv-check',
   path: '/tv-check',
@@ -61,20 +73,24 @@ const WatchTypeIdRoute = WatchTypeIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mixer': typeof MixerRoute
   '/movies': typeof MoviesRoute
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mixer': typeof MixerRoute
   '/movies': typeof MoviesRoute
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
@@ -82,10 +98,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/mixer': typeof MixerRoute
   '/movies': typeof MoviesRoute
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
@@ -94,30 +112,36 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/mixer'
     | '/movies'
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/mixer'
     | '/movies'
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
   id:
     | '__root__'
     | '/'
+    | '/mixer'
     | '/movies'
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
@@ -125,10 +149,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MixerRoute: typeof MixerRoute
   MoviesRoute: typeof MoviesRoute
   MyListRoute: typeof MyListRoute
   SearchRoute: typeof SearchRoute
   SeriesRoute: typeof SeriesRoute
+  ShuffleRoute: typeof ShuffleRoute
   TvCheckRoute: typeof TvCheckRoute
   TitleTypeIdRoute: typeof TitleTypeIdRoute
   WatchTypeIdRoute: typeof WatchTypeIdRoute
@@ -141,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mixer': {
+      id: '/mixer'
+      path: '/mixer'
+      fullPath: '/mixer'
+      preLoaderRoute: typeof MixerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/movies': {
@@ -171,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shuffle': {
+      id: '/shuffle'
+      path: '/shuffle'
+      fullPath: '/shuffle'
+      preLoaderRoute: typeof ShuffleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tv-check': {
       id: '/tv-check'
       path: '/tv-check'
@@ -197,10 +237,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MixerRoute: MixerRoute,
   MoviesRoute: MoviesRoute,
   MyListRoute: MyListRoute,
   SearchRoute: SearchRoute,
   SeriesRoute: SeriesRoute,
+  ShuffleRoute: ShuffleRoute,
   TvCheckRoute: TvCheckRoute,
   TitleTypeIdRoute: TitleTypeIdRoute,
   WatchTypeIdRoute: WatchTypeIdRoute,
