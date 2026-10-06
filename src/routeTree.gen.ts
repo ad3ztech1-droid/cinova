@@ -14,6 +14,7 @@ import { Route as MoviesRouteImport } from './routes/movies'
 import { Route as MyListRouteImport } from './routes/my-list'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SeriesRouteImport } from './routes/series'
+import { Route as ShuffleRouteImport } from './routes/shuffle'
 import { Route as TvCheckRouteImport } from './routes/tv-check'
 import { Route as TitleTypeIdRouteImport } from './routes/title.$type.$id'
 import { Route as WatchTypeIdRouteImport } from './routes/watch.$type.$id'
@@ -43,6 +44,11 @@ const SeriesRoute = SeriesRouteImport.update({
   path: '/series',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShuffleRoute = ShuffleRouteImport.update({
+  id: '/shuffle',
+  path: '/shuffle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TvCheckRoute = TvCheckRouteImport.update({
   id: '/tv-check',
   path: '/tv-check',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/my-list': typeof MyListRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
+  '/shuffle': typeof ShuffleRoute
   '/tv-check': typeof TvCheckRoute
   '/title/$type/$id': typeof TitleTypeIdRoute
   '/watch/$type/$id': typeof WatchTypeIdRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/my-list'
     | '/search'
     | '/series'
+    | '/shuffle'
     | '/tv-check'
     | '/title/$type/$id'
     | '/watch/$type/$id'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   MyListRoute: typeof MyListRoute
   SearchRoute: typeof SearchRoute
   SeriesRoute: typeof SeriesRoute
+  ShuffleRoute: typeof ShuffleRoute
   TvCheckRoute: typeof TvCheckRoute
   TitleTypeIdRoute: typeof TitleTypeIdRoute
   WatchTypeIdRoute: typeof WatchTypeIdRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shuffle': {
+      id: '/shuffle'
+      path: '/shuffle'
+      fullPath: '/shuffle'
+      preLoaderRoute: typeof ShuffleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tv-check': {
       id: '/tv-check'
       path: '/tv-check'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyListRoute: MyListRoute,
   SearchRoute: SearchRoute,
   SeriesRoute: SeriesRoute,
+  ShuffleRoute: ShuffleRoute,
   TvCheckRoute: TvCheckRoute,
   TitleTypeIdRoute: TitleTypeIdRoute,
   WatchTypeIdRoute: WatchTypeIdRoute,
