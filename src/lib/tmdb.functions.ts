@@ -43,6 +43,47 @@ export const discover = createServerFn({ method: "GET" })
     }),
   );
 
+export const moodShuffle = createServerFn({ method: "GET" })
+  .inputValidator((d) =>
+    z
+      .object({
+        type: z.enum(["movie", "tv"]),
+        genres: z.array(z.number().int()).min(1).max(4),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => fetchMoodPick(data.type, data.genres));
+
+export const tasteMix = createServerFn({ method: "GET" })
+  .inputValidator((d) =>
+    z
+      .object({
+        picks: z
+          .array(z.object({ type: z.enum(["movie", "tv"]), id: z.number().int().positive() }))
+          .min(1)
+          .max(3),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const picked = new Set(data.picks.map((p) => `${p.type}-${p.id}`));
+    const lists = await Promise.all(data.picks.map((p) => fetchRecommendations(p.type, p.id)));
+    const score = new Map<string, { item: (typeof lists)[number][number]; hits: number }>();
+    for (const items of lists) {
+      for (const item of items) {
+        const key = `${item.media_type}-${item.id}`;
+        if (picked.has(key)) continue;
+        const entry = score.get(key);
+        if (entry) entry.hits += 1;
+        else score.set(key, { item, hits: 1 });
+      }
+    }
+    return [...score.values()]
+      .sort((a, b) => b.hits - a.hits || b.item.vote_average - a.item.vote_average)
+      .slice(0, 18)
+      .map((e) => e.item);
+  });
+
 export const getGenres = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ type: z.enum(["movie", "tv"]) }).parse(d))
   .handler(async ({ data }) => fetchGenres(data.type));
