@@ -11,6 +11,8 @@ const links = [
   { to: "/", label: "Home" },
   { to: "/movies", label: "Movies" },
   { to: "/series", label: "Series" },
+  { to: "/shuffle", label: "Shuffle" },
+  { to: "/mixer", label: "Mixer" },
   { to: "/my-list", label: "My List" },
 ] as const;
 
