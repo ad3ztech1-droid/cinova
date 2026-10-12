@@ -29,7 +29,7 @@ export function ProviderStrip() {
           View all
         </Link>
       </div>
-      <div className="no-scrollbar flex gap-4 overflow-x-auto px-5 pb-2 md:px-12 lg:px-16">
+      <div className="no-scrollbar flex gap-5 overflow-x-auto px-5 pb-2 md:gap-7 md:px-12 lg:px-16">
         {providers.map((p) => {
           const logo = img(p.logo_path, "original");
           return (
@@ -37,9 +37,9 @@ export function ProviderStrip() {
               key={p.provider_id}
               to="/movies"
               search={{ provider: p.provider_id }}
-              className="group flex w-28 shrink-0 flex-col items-center gap-3 rounded-sm border border-border bg-surface px-3 py-5 transition-colors hover:border-primary/50 md:w-32"
+              className="group flex w-24 shrink-0 flex-col items-center gap-3 md:w-28"
             >
-              <span className="block h-16 w-16 overflow-hidden rounded-2xl shadow-poster ring-1 ring-border md:h-20 md:w-20">
+              <span className="block h-20 w-20 overflow-hidden rounded-2xl shadow-poster ring-1 ring-white/10 transition duration-300 group-hover:-translate-y-1 group-hover:ring-primary/50 md:h-24 md:w-24">
                 {logo && (
                   <Img
                     src={logo}
@@ -50,7 +50,7 @@ export function ProviderStrip() {
                   />
                 )}
               </span>
-              <span className="line-clamp-2 text-center text-xs font-medium leading-snug text-muted-foreground transition-colors group-hover:text-foreground">
+              <span className="text-center text-xs font-medium leading-snug text-muted-foreground transition-colors group-hover:text-foreground">
                 {p.provider_name}
               </span>
             </Link>
