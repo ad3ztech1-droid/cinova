@@ -25,6 +25,7 @@ function SeriesPage() {
     genre: search.genre,
     year: search.year ?? "any",
     rating: search.rating,
+    provider: search.provider,
     sort: search.sort ?? "popularity.desc",
   };
 
@@ -35,6 +36,7 @@ function SeriesPage() {
         genre: next.genre,
         year: next.year === "any" ? undefined : next.year,
         rating: next.rating,
+        provider: next.provider,
         sort: next.sort === "popularity.desc" ? undefined : next.sort,
       },
       replace: true,
