@@ -113,6 +113,7 @@ export interface DiscoverFilters {
   yearFrom?: number | undefined;
   yearTo?: number | undefined;
   minRating?: number | undefined;
+  provider?: number | undefined;
 }
 
 function mapSort(type: MediaType, sort: string) {
@@ -133,12 +134,44 @@ export async function fetchDiscover(type: MediaType, page: number, filters: Disc
     "vote_count.gte": filters.minRating ? 300 : 50,
   };
   if (filters.genre) params["with_genres"] = filters.genre;
+  if (filters.provider) {
+    params["with_watch_providers"] = filters.provider;
+    params["watch_region"] = "US";
+  }
   if (filters.yearFrom) params[dateFrom] = `${filters.yearFrom}-01-01`;
   if (filters.yearTo) params[dateTo] = `${filters.yearTo}-12-31`;
   if (filters.minRating) params["vote_average.gte"] = filters.minRating;
 
   const res = await tmdb<{ results: RawItem[]; total_pages: number; page: number }>(`/discover/${type}`, params);
   return { results: list(res, type), total_pages: Math.min(res.total_pages, 500), page: res.page };
+}
+
+/** Major streaming services users recognise, matched against TMDB's US list. */
+const CURATED_PROVIDERS = [
+  "Netflix",
+  "Disney Plus",
+  "Disney+",
+  "Amazon Prime Video",
+  "Prime Video",
+  "Apple TV+",
+  "Apple TV Plus",
+  "Hulu",
+  "Max",
+  "Peacock",
+  "Paramount Plus",
+  "Paramount+",
+];
+
+export async function fetchProviders() {
+  const res = await tmdb<{
+    results?: { provider_id: number; provider_name: string; logo_path: string | null }[];
+  }>("/watch/providers/movie", { watch_region: "US" });
+  const seen = new Set<string>();
+  return (res.results ?? [])
+    .filter((p) => p.logo_path && CURATED_PROVIDERS.includes(p.provider_name))
+    .filter((p) => (seen.has(p.provider_name) ? false : seen.add(p.provider_name)))
+    .sort((a, b) => CURATED_PROVIDERS.indexOf(a.provider_name) - CURATED_PROVIDERS.indexOf(b.provider_name))
+    .map((p) => ({ provider_id: p.provider_id, provider_name: p.provider_name, logo_path: p.logo_path ?? null }));
 }
 
 export async function fetchMoodPick(type: MediaType, genreIds: number[]) {

@@ -67,7 +67,16 @@ export interface MediaDetail extends MediaItem {
 
 const IMG = "https://image.tmdb.org/t/p";
 
-export function img(path: string | null | undefined, size: "w185" | "w342" | "w500" | "w780" | "w1280" | "original" = "w500") {
+export interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string | null;
+}
+
+export function img(
+  path: string | null | undefined,
+  size: "w154" | "w185" | "w342" | "w500" | "w780" | "w1280" | "original" = "w500",
+) {
   if (!path) return null;
   return `${IMG}/${size}${path}`;
 }
