@@ -145,7 +145,7 @@ export function BrowseCatalog({
   useEffect(() => {
     setPage(1);
     setItems([]);
-  }, [type, filters.genre, filters.sort, filters.year, filters.rating]);
+  }, [type, filters.genre, filters.sort, filters.year, filters.rating, filters.provider]);
 
   useEffect(() => {
     if (!listQuery.data) return;
@@ -216,6 +216,20 @@ export function BrowseCatalog({
           {yearRanges.map((y) => (
             <option key={y.value} value={y.value}>
               {y.label}
+            </option>
+          ))}
+        </FilterSelect>
+
+        <FilterSelect
+          label="Streaming service"
+          value={filters.provider !== undefined ? String(filters.provider) : "any"}
+          active={filters.provider !== undefined}
+          onChange={(v) => setFilter({ provider: v === "any" ? undefined : Number(v) })}
+        >
+          <option value="any">All services</option>
+          {(providersQuery.data ?? []).map((p) => (
+            <option key={p.provider_id} value={p.provider_id}>
+              {p.provider_name}
             </option>
           ))}
         </FilterSelect>
