@@ -147,31 +147,44 @@ export async function fetchDiscover(type: MediaType, page: number, filters: Disc
 }
 
 /** Major streaming services users recognise, matched against TMDB's US list. */
-const CURATED_PROVIDERS = [
-  "Netflix",
-  "Disney Plus",
-  "Disney+",
-  "Amazon Prime Video",
-  "Prime Video",
-  "Apple TV+",
-  "Apple TV Plus",
-  "Hulu",
-  "Max",
-  "Peacock",
-  "Paramount Plus",
-  "Paramount+",
+const CURATED_PROVIDERS: { match: string; display: string }[] = [
+  { match: "Netflix", display: "Netflix" },
+  { match: "Disney Plus", display: "Disney+" },
+  { match: "Amazon Prime Video", display: "Prime Video" },
+  { match: "Apple TV", display: "Apple TV+" },
+  { match: "HBO Max", display: "HBO Max" },
+  { match: "Max", display: "HBO Max" },
+  { match: "Hulu", display: "Hulu" },
+  { match: "Peacock Premium Plus", display: "Peacock" },
+  { match: "Peacock Premium", display: "Peacock" },
+  { match: "Paramount Plus Premium", display: "Paramount+" },
+  { match: "Paramount Plus Essential", display: "Paramount+" },
+  { match: "Paramount Plus", display: "Paramount+" },
+  { match: "Paramount+", display: "Paramount+" },
 ];
 
 export async function fetchProviders() {
   const res = await tmdb<{
     results?: { provider_id: number; provider_name: string; logo_path: string | null }[];
   }>("/watch/providers/movie", { watch_region: "US" });
-  const seen = new Set<string>();
-  return (res.results ?? [])
-    .filter((p) => p.logo_path && CURATED_PROVIDERS.includes(p.provider_name))
-    .filter((p) => (seen.has(p.provider_name) ? false : seen.add(p.provider_name)))
-    .sort((a, b) => CURATED_PROVIDERS.indexOf(a.provider_name) - CURATED_PROVIDERS.indexOf(b.provider_name))
-    .map((p) => ({ provider_id: p.provider_id, provider_name: p.provider_name, logo_path: p.logo_path ?? null }));
+  const byName = new Map<string, { provider_id: number; provider_name: string; logo_path: string | null }>();
+  for (const p of res.results ?? []) {
+    const curated = CURATED_PROVIDERS.find((c) => p.provider_name === c.match || p.provider_name.startsWith(c.match + " "));
+    if (!p.logo_path || !curated) continue;
+    const existing = byName.get(curated.display);
+    // Prefer the standalone service over channel bundles (shorter name wins).
+    if (!existing || p.provider_name.length < existing.provider_name.length) {
+      byName.set(curated.display, { provider_id: p.provider_id, provider_name: curated.display, logo_path: p.logo_path });
+    }
+  }
+  return CURATED_PROVIDERS.filter((c) => byName.has(c.display))
+    .map((c) => byName.get(c.display)!)
+    .map((p, i, arr) =>
+      arr.findIndex((q) => q.provider_id === p.provider_id) === i
+        ? { provider_id: p.provider_id, provider_name: p.provider_name, logo_path: p.logo_path ?? null }
+        : { provider_id: -1, provider_name: "", logo_path: null },
+    )
+    .filter((p) => p.provider_id > 0);
 }
 
 export async function fetchMoodPick(type: MediaType, genreIds: number[]) {
