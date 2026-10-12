@@ -109,8 +109,8 @@ function Home() {
       <Hero items={data.trending} />
       <div className="relative z-10 -mt-20">
         <ContinueWatching />
-        <MediaRow title="Trending now" items={data.trending} />
         <ProviderStrip />
+        <MediaRow title="Trending now" items={data.trending} />
         <MediaRow title="In theatres" items={data.nowPlaying} />
         <MediaRow title="Popular movies" items={data.popularMovies} />
         <MediaRow title="Popular series" items={data.popularTv} />
