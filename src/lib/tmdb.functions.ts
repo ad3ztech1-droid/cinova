@@ -9,6 +9,7 @@ import {
   fetchSeason,
   fetchMoodPick,
   fetchRecommendations,
+  fetchProviders,
 } from "./tmdb.mappers.server";
 
 export const getHome = createServerFn({ method: "GET" }).handler(async () => fetchHome());
@@ -31,6 +32,7 @@ export const discover = createServerFn({ method: "GET" })
         yearFrom: z.number().int().min(1900).max(2100).optional(),
         yearTo: z.number().int().min(1900).max(2100).optional(),
         minRating: z.number().min(0).max(10).optional(),
+        provider: z.number().int().positive().optional(),
         page: z.number().int().min(1).max(500).default(1),
       })
       .parse(d),
@@ -42,6 +44,7 @@ export const discover = createServerFn({ method: "GET" })
       yearFrom: data.yearFrom,
       yearTo: data.yearTo,
       minRating: data.minRating,
+      provider: data.provider,
     }),
   );
 
@@ -89,6 +92,8 @@ export const tasteMix = createServerFn({ method: "GET" })
 export const getGenres = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ type: z.enum(["movie", "tv"]) }).parse(d))
   .handler(async ({ data }) => fetchGenres(data.type));
+
+export const getProviders = createServerFn({ method: "GET" }).handler(async () => fetchProviders());
 
 export const getSeason = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ id: z.number().int().positive(), season: z.number().int().min(0) }).parse(d))
