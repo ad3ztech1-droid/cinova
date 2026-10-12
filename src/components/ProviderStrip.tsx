@@ -31,7 +31,7 @@ export function ProviderStrip() {
       </div>
       <div className="no-scrollbar flex gap-4 overflow-x-auto px-5 pb-2 md:px-12 lg:px-16">
         {providers.map((p) => {
-          const logo = img(p.logo_path, "w154");
+          const logo = img(p.logo_path, "original");
           return (
             <Link
               key={p.provider_id}
@@ -39,13 +39,14 @@ export function ProviderStrip() {
               search={{ provider: p.provider_id }}
               className="group flex w-28 shrink-0 flex-col items-center gap-3 rounded-sm border border-border bg-surface px-3 py-5 transition-colors hover:border-primary/50 md:w-32"
             >
-              <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-surface-2 p-2 shadow-poster">
+              <span className="block h-16 w-16 overflow-hidden rounded-2xl shadow-poster ring-1 ring-border md:h-20 md:w-20">
                 {logo && (
                   <Img
                     src={logo}
                     alt={`${p.provider_name} logo`}
-                    loading="lazy"
-                    className="h-full w-full object-contain"
+                    loading="eager"
+                    decoding="async"
+                    className="h-full w-full object-cover"
                   />
                 )}
               </span>
