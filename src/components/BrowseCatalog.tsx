@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { z } from "zod";
-import { discover, getGenres } from "@/lib/tmdb.functions";
+import { discover, getGenres, getProviders } from "@/lib/tmdb.functions";
 import type { MediaItem, MediaType } from "@/lib/tmdb";
 import { MediaCard } from "./MediaCard";
 
@@ -10,6 +10,7 @@ export interface CatalogFilters {
   genre?: number | undefined;
   year: string;
   rating?: number | undefined;
+  provider?: number | undefined;
   sort: string;
 }
 
@@ -19,6 +20,7 @@ export const filterSearchSchema = z.object({
   genre: z.coerce.number().int().positive().optional(),
   year: z.string().optional(),
   rating: z.coerce.number().min(0).max(10).optional(),
+  provider: z.coerce.number().int().positive().optional(),
   sort: z.string().max(40).optional(),
 });
 
@@ -104,7 +106,11 @@ export function BrowseCatalog({
 
   const yearRange = useMemo(() => yearRanges.find((y) => y.value === filters.year), [filters.year]);
   const hasActiveFilters =
-    filters.genre !== undefined || filters.year !== "any" || filters.rating !== undefined || filters.sort !== "popularity.desc";
+    filters.genre !== undefined ||
+    filters.year !== "any" ||
+    filters.rating !== undefined ||
+    filters.provider !== undefined ||
+    filters.sort !== "popularity.desc";
 
   const genresQuery = useQuery({
     queryKey: ["genres", type],
@@ -112,8 +118,14 @@ export function BrowseCatalog({
     staleTime: Infinity,
   });
 
+  const providersQuery = useQuery({
+    queryKey: ["providers"],
+    queryFn: () => getProviders(),
+    staleTime: 1000 * 60 * 60,
+  });
+
   const listQuery = useQuery({
-    queryKey: ["discover", type, filters.genre, filters.sort, filters.year, filters.rating, page],
+    queryKey: ["discover", type, filters.genre, filters.sort, filters.year, filters.rating, filters.provider, page],
     queryFn: () =>
       discover({
         data: {
@@ -123,6 +135,7 @@ export function BrowseCatalog({
           yearFrom: yearRange?.from,
           yearTo: yearRange?.to,
           minRating: filters.rating,
+          provider: filters.provider,
           page,
         },
       }),
@@ -132,7 +145,7 @@ export function BrowseCatalog({
   useEffect(() => {
     setPage(1);
     setItems([]);
-  }, [type, filters.genre, filters.sort, filters.year, filters.rating]);
+  }, [type, filters.genre, filters.sort, filters.year, filters.rating, filters.provider]);
 
   useEffect(() => {
     if (!listQuery.data) return;
@@ -203,6 +216,20 @@ export function BrowseCatalog({
           {yearRanges.map((y) => (
             <option key={y.value} value={y.value}>
               {y.label}
+            </option>
+          ))}
+        </FilterSelect>
+
+        <FilterSelect
+          label="Streaming service"
+          value={filters.provider !== undefined ? String(filters.provider) : "any"}
+          active={filters.provider !== undefined}
+          onChange={(v) => setFilter({ provider: v === "any" ? undefined : Number(v) })}
+        >
+          <option value="any">All services</option>
+          {(providersQuery.data ?? []).map((p) => (
+            <option key={p.provider_id} value={p.provider_id}>
+              {p.provider_name}
             </option>
           ))}
         </FilterSelect>

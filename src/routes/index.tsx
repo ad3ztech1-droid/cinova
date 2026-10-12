@@ -5,6 +5,7 @@ import { Play, X } from "lucide-react";
 import { getHome } from "@/lib/tmdb.functions";
 import { Hero } from "@/components/Hero";
 import { MediaRow } from "@/components/MediaRow";
+import { ProviderStrip } from "@/components/ProviderStrip";
 import { clearHistory, removeWatch, useContinueWatching } from "@/lib/my-list";
 import { img } from "@/lib/tmdb";
 
@@ -109,6 +110,7 @@ function Home() {
       <div className="relative z-10 -mt-20">
         <ContinueWatching />
         <MediaRow title="Trending now" items={data.trending} />
+        <ProviderStrip />
         <MediaRow title="In theatres" items={data.nowPlaying} />
         <MediaRow title="Popular movies" items={data.popularMovies} />
         <MediaRow title="Popular series" items={data.popularTv} />
