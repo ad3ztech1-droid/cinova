@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { MediaItem } from "@/lib/tmdb";
 import { MediaCard } from "./MediaCard";
+import { Button } from "@/components/ui/button";
 
 export function MediaRow({ title, items }: { title: string; items: MediaItem[] }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -17,22 +18,22 @@ export function MediaRow({ title, items }: { title: string; items: MediaItem[] }
   return (
     <section className="group/row relative py-8 md:py-10">
       <div className="mb-6 flex items-end justify-between px-5 md:px-12 lg:px-16">
-        <div className="flex items-baseline gap-4"><h2 className="font-display text-3xl md:text-4xl">{title}</h2><span className="hidden text-xs uppercase text-muted-foreground sm:inline">Curated for you</span></div>
+        <h2 className="font-display text-3xl md:text-4xl">{title}</h2>
         <div className="hidden gap-2 md:flex">
-          <button
+          <Button variant="glass" size="icon"
+            title="Previous titles"
             aria-label={`Scroll ${title} left`}
             onClick={() => scroll(-1)}
-            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:border-primary hover:text-primary"
           >
             <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
+          </Button>
+          <Button variant="glass" size="icon"
+            title="Next titles"
             aria-label={`Scroll ${title} right`}
             onClick={() => scroll(1)}
-            className="rounded-full border border-border bg-surface/80 p-2 text-foreground/80 transition-colors hover:border-primary hover:text-primary"
           >
             <ChevronRight className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -9,9 +9,10 @@ export function MediaCard({ item, className = "" }: { item: MediaItem; className
     <Link
       to="/title/$type/$id"
       params={{ type: item.media_type, id: String(item.id) }}
-      className={`group relative block bg-surface shadow-poster transition-all duration-500 hover:z-10 hover:-translate-y-2 ${className}`}
+      aria-label={`${item.title}, ${year(item.release_date)}, ${item.media_type === "tv" ? "TV series" : "movie"}`}
+      className={`group relative block min-w-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:-translate-y-1 ${className}`}
     >
-      <div className="aspect-[2/3] w-full overflow-hidden bg-surface-2">
+      <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-surface-2 shadow-poster ring-1 ring-border transition-shadow group-hover:ring-primary/50">
         <Img
           src={poster}
           alt={`${item.title} poster`}
@@ -23,23 +24,19 @@ export function MediaCard({ item, className = "" }: { item: MediaItem; className
             </div>
           }
         />
+        <span className="glass-panel absolute left-2 top-2 flex items-center gap-1 rounded-sm px-2 py-1 text-[11px] font-medium text-primary">
+          <Star className="h-3 w-3 fill-current" /> {item.vote_average.toFixed(1)}
+        </span>
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/20 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="glass-panel flex h-12 w-12 items-center justify-center rounded-full text-foreground"><Play className="h-5 w-5 fill-current" /></span>
+        </span>
       </div>
-
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background via-background/30 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1 text-primary">
-            <Star className="h-3 w-3 fill-current" />
-            {item.vote_average.toFixed(1)}
-          </span>
-          <span>{year(item.release_date)}</span>
-          <span className="uppercase">{item.media_type}</span>
-        </div>
-        <span className="mt-1 line-clamp-2 text-sm font-semibold">{item.title}</span>
+      <div className="pt-3">
+        <span className="block truncate text-sm font-medium text-foreground">{item.title}</span>
+        <span className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{year(item.release_date) || "TBA"}</span><span className="h-0.5 w-0.5 rounded-full bg-muted-foreground" /><span>{item.media_type === "tv" ? "Series" : "Movie"}</span>
+        </span>
       </div>
-
-      <span className="absolute right-3 top-3 flex h-10 w-10 scale-75 items-center justify-center rounded-full bg-foreground text-background opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100">
-        <Play className="h-4 w-4 fill-current" />
-      </span>
     </Link>
   );
 }
