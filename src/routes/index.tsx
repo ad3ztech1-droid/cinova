@@ -8,6 +8,7 @@ import { MediaRow } from "@/components/MediaRow";
 import { ProviderStrip } from "@/components/ProviderStrip";
 import { clearHistory, removeWatch, useContinueWatching } from "@/lib/my-list";
 import { img } from "@/lib/tmdb";
+import { Button } from "@/components/ui/button";
 
 const homeQuery = queryOptions({
   queryKey: ["home"],
@@ -17,7 +18,7 @@ const homeQuery = queryOptions({
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(homeQuery),
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Lumiere — Stream Movies & Series in HD" },
       {
@@ -32,6 +33,12 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.trending.find((item) => item.backdrop_path)
+        ? [
+            { property: "og:image", content: img(loaderData.trending.find((item) => item.backdrop_path)?.backdrop_path ?? null, "w1280") ?? "" },
+            { name: "twitter:image", content: img(loaderData.trending.find((item) => item.backdrop_path)?.backdrop_path ?? null, "w1280") ?? "" },
+          ]
+        : []),
     ],
   }),
   component: Home,
@@ -44,14 +51,13 @@ function ContinueWatching() {
     <section className="py-8 md:py-10">
       <div className="mb-6 flex items-baseline gap-4 px-5 md:px-12 lg:px-16">
         <h2 className="font-display text-3xl md:text-4xl">Continue watching</h2>
-        <span className="hidden text-xs uppercase text-muted-foreground sm:inline">Pick up where you left off</span>
-        <button
+        <Button variant="ghost" size="sm"
           type="button"
           onClick={clearHistory}
-          className="ml-auto cursor-pointer text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+          className="ml-auto text-muted-foreground hover:bg-surface hover:text-primary"
         >
           Clear all
-        </button>
+        </Button>
       </div>
       <div className="no-scrollbar flex gap-5 overflow-x-auto px-5 pb-2 md:px-12 lg:px-16">
         {items.map((i) => (
@@ -87,14 +93,15 @@ function ContinueWatching() {
                 </div>
               </div>
             </Link>
-            <button
+            <Button variant="glass" size="icon"
               type="button"
               aria-label={`Remove ${i.title} from continue watching`}
               onClick={() => removeWatch(i.id, i.media_type)}
-              className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/70 opacity-100 backdrop-blur-sm transition-all hover:bg-background hover:text-primary md:opacity-0 md:group-hover:opacity-100"
+              title={`Remove ${i.title}`}
+              className="absolute right-2 top-2 z-10 h-8 w-8 opacity-100 transition-all hover:text-primary md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         ))}
       </div>
@@ -107,7 +114,7 @@ function Home() {
   return (
     <div className="pb-8">
       <Hero items={data.trending} />
-      <div className="relative z-10 -mt-20">
+      <div className="relative z-10 -mt-8">
         <ContinueWatching />
         <ProviderStrip />
         <MediaRow title="Trending now" items={data.trending} />

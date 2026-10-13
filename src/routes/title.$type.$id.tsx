@@ -7,6 +7,7 @@ import { getDetail, getSeason } from "@/lib/tmdb.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
 import { MediaCard } from "@/components/MediaCard";
 import { useMyList } from "@/lib/my-list";
+import { Button } from "@/components/ui/button";
 
 const detailQuery = (type: MediaType, id: number) =>
   queryOptions({
@@ -32,6 +33,8 @@ export const Route = createFileRoute("/title/$type/$id")({
         { name: "description", content: desc },
         { property: "og:title", content: `${loaderData.title} | Lumiere` },
         { property: "og:description", content: desc },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
         ...(image
           ? [
               { property: "og:image", content: image },
@@ -74,11 +77,11 @@ function TitlePage() {
             <Img
               src={poster}
               alt={`${data.title} poster`}
-              className="hidden w-52 rounded-xl shadow-poster md:block"
+              className="hidden w-52 rounded-md shadow-poster md:block"
             />
           )}
           <div className="max-w-2xl">
-            <h1 className="text-4xl font-extrabold md:text-5xl">{data.title}</h1>
+            <h1 className="break-words text-4xl md:text-6xl">{data.title}</h1>
             {data.tagline && <p className="mt-2 italic text-primary">{data.tagline}</p>}
 
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
@@ -94,12 +97,11 @@ function TitlePage() {
                 </span>
               ) : null}
               {type === "tv" && data.number_of_seasons > 0 && <span>{data.number_of_seasons} seasons</span>}
-              <span className="rounded border border-border px-1.5 py-0.5 text-xs">HD</span>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
               {data.genres.map((g) => (
-                <span key={g.id} className="rounded-full border border-border bg-surface/70 px-3 py-1 text-xs">
+                <span key={g.id} className="glass-panel rounded-sm px-3 py-1 text-xs">
                   {g.name}
                 </span>
               ))}
@@ -108,14 +110,14 @@ function TitlePage() {
             <p className="mt-5 text-sm text-foreground/85 md:text-base">{data.overview}</p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link
+              <Button asChild size="lg" className="h-11 px-6"><Link
                 to="/watch/$type/$id"
                 params={{ type, id: String(id) }}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform hover:scale-105"
               >
                 <Play className="h-4 w-4 fill-current" /> Play
-              </Link>
-              <button
+              </Link></Button>
+              <Button variant="glass" size="lg" className="h-11 px-6"
+                aria-pressed={saved}
                 onClick={() =>
                   toggle({
                     id: data.id,
@@ -128,11 +130,10 @@ function TitlePage() {
                     media_type: type,
                   })
                 }
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-6 py-3 text-sm font-semibold backdrop-blur transition-colors hover:bg-surface-2"
               >
                 {saved ? <Check className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4" />}
                 {saved ? "In my list" : "Add to my list"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -145,7 +146,7 @@ function TitlePage() {
             <select
               value={season}
               onChange={(e) => setSeason(Number(e.target.value))}
-              className="rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
+              className="glass-panel rounded-md px-3 py-2 text-sm outline-none"
               aria-label="Select season"
             >
               {data.seasons.map((s) => (
@@ -163,9 +164,9 @@ function TitlePage() {
                 to="/watch/$type/$id"
                 params={{ type: "tv", id: String(id) }}
                 search={{ s: ep.season_number, e: ep.episode_number }}
-                className="group flex gap-4 rounded-xl border border-border bg-surface/60 p-3 transition-colors hover:bg-surface-2"
+                className="glass-panel group flex gap-3 rounded-md p-3 transition-colors hover:bg-glass-hover md:gap-4"
               >
-                <div className="aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+                <div className="aspect-video w-24 shrink-0 overflow-hidden rounded-sm bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (
                     <Img src={img(ep.still_path, "w342")} alt={ep.name} loading="lazy" className="h-full w-full object-cover" />
                   )}

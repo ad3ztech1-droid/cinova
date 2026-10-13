@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 ## Design architecture
 - Use semantic Obsidian & Gold tokens with Instrument Serif display and Work Sans interface typography for the premium editorial cinema direction.
+- Share glass surfaces and interaction states through global semantic tokens and Button variants; provide opaque fallbacks so older TV browsers remain readable.

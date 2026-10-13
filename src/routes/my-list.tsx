@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bookmark } from "lucide-react";
 import { useMyList } from "@/lib/my-list";
 import { MediaCard } from "@/components/MediaCard";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/my-list")({
   head: () => ({
@@ -10,6 +11,8 @@ export const Route = createFileRoute("/my-list")({
       { name: "description", content: "Everything you saved on Lumiere, ready to watch whenever you are." },
       { property: "og:title", content: "My List — Your Saved Titles | Lumiere" },
       { property: "og:description", content: "Your personal watchlist of movies and series on Lumiere." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MyList,
@@ -20,19 +23,18 @@ function MyList() {
 
   return (
     <div className="min-h-screen px-4 pb-16 pt-28 md:px-10">
-      <h1 className="text-3xl font-extrabold md:text-4xl">My List</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Saved on this device — add titles from any detail page.</p>
+      <h1 className="text-4xl md:text-6xl">My List</h1>
+      <p className="mt-2 text-sm text-muted-foreground">Your next great watch.</p>
 
       {ready && items.length === 0 && (
         <div className="mt-16 flex flex-col items-center gap-4 text-center">
           <Bookmark className="h-10 w-10 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Your list is empty.</p>
-          <Link
+          <Button asChild><Link
             to="/movies"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
           >
             Browse movies
-          </Link>
+          </Link></Button>
         </div>
       )}
 

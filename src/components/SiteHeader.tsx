@@ -6,6 +6,7 @@ import { searchMedia } from "@/lib/tmdb.functions";
 import { img, year } from "@/lib/tmdb";
 import { Img } from "@/components/Img";
 import { InstallAppButton } from "@/components/InstallAppButton";
+import { Button } from "@/components/ui/button";
 
 const links = [
   { to: "/", label: "Home" },
@@ -90,16 +91,14 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled ? "border-b border-border bg-background/95 backdrop-blur-xl" : "bg-gradient-to-b from-background/90 to-transparent"
-      }`}
+      className="fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-all duration-300 md:px-8 md:pt-4"
     >
-      <div className="flex h-16 items-center gap-4 px-5 md:h-20 md:px-12 lg:px-16">
+      <div className={`glass-panel mx-auto flex h-14 max-w-[1600px] items-center gap-3 rounded-lg px-3 transition-colors md:h-16 md:gap-5 md:px-6 ${scrolled ? "bg-glass-hover" : ""}`}>
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Lumiere home">
           <span className="font-display text-2xl md:text-3xl">Lumiere</span>
         </Link>
 
-        <nav className="ml-5 hidden items-center gap-7 md:flex">
+        <nav className="ml-2 hidden items-center gap-5 lg:flex" aria-label="Main navigation">
           {links.map((l) => (
             <Link
               key={l.to}
@@ -116,7 +115,7 @@ export function SiteHeader() {
 
         <div ref={boxRef} className="relative ml-auto w-full max-w-[12rem] sm:max-w-xs">
           <form onSubmit={submit} className="flex items-center gap-2">
-            <div className="flex w-full items-center gap-2 rounded-full border border-border bg-surface/65 px-3 py-2 backdrop-blur-md transition-colors focus-within:border-primary/60 focus-within:bg-surface">
+            <div className="flex w-full items-center gap-2 rounded-md border border-glass-border bg-background/30 px-3 py-2 transition-colors focus-within:border-primary/60 focus-within:bg-surface">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}
@@ -127,7 +126,7 @@ export function SiteHeader() {
                 }}
                 onFocus={() => setShowSuggest(true)}
                 onKeyDown={onKeyDown}
-                placeholder="Titles, genres…"
+                placeholder="Search films & series"
                 aria-label="Search"
                 autoComplete="off"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
@@ -137,18 +136,19 @@ export function SiteHeader() {
           </form>
 
           {showSuggest && debounced.length > 1 && (
-            <div className="absolute right-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
+            <div className="glass-panel absolute right-0 top-full z-50 mt-3 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg">
               {suggestions.length === 0 && !isFetching && (
                 <p className="px-4 py-5 text-center text-sm text-muted-foreground">No matches found.</p>
               )}
               <ul className="max-h-[60vh] overflow-y-auto">
                 {suggestions.map((item, i) => (
                   <li key={`${item.media_type}-${item.id}`}>
-                    <button
+                    <Button
+                      variant="ghost"
                       type="button"
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(item)}
-                      className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors ${
+                      className={`flex h-auto w-full justify-start rounded-none items-center gap-3 px-3 py-2 text-left transition-colors ${
                         active === i ? "bg-surface-2" : "hover:bg-surface"
                       }`}
                     >
@@ -167,21 +167,22 @@ export function SiteHeader() {
                           {item.vote_average ? ` · ★ ${item.vote_average.toFixed(1)}` : ""}
                         </span>
                       </span>
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>
               {q.trim() && (
-                <button
+                <Button
+                  variant="ghost"
                   type="button"
                   onClick={() => {
                     setShowSuggest(false);
                     navigate({ to: "/search", search: { q: q.trim() } });
                   }}
-                  className="block w-full border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:bg-surface"
+                  className="block h-auto w-full truncate rounded-none border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:bg-surface"
                 >
                   See all results for “{q.trim()}”
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -189,19 +190,22 @@ export function SiteHeader() {
 
         <InstallAppButton className="shrink-0" />
 
-        <button
-          className="md:hidden"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0 lg:hidden"
           aria-label="Toggle menu"
+          aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        </Button>
       </div>
 
       {open && (
-        <nav className="flex flex-col border-t border-border bg-background/95 px-4 py-2 backdrop-blur-xl md:hidden">
+        <nav aria-label="Mobile navigation" className="glass-panel mt-2 flex flex-col rounded-lg px-4 py-2 lg:hidden">
           {links.map((l) => (
-            <Link key={l.to} to={l.to} className="py-2.5 text-sm font-medium text-muted-foreground">
+            <Link key={l.to} to={l.to} activeOptions={{ exact: l.to === "/" }} activeProps={{ className: "text-primary" }} className="py-2.5 text-sm font-medium text-muted-foreground">
               {l.label}
             </Link>
           ))}

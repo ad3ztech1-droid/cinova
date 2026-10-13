@@ -41,6 +41,8 @@ export const Route = createFileRoute("/watch/$type/$id")({
         { name: "description", content: desc },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
         { name: "robots", content: "noindex" },
       ],
     };

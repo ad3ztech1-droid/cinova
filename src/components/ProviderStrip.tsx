@@ -21,10 +21,9 @@ export function ProviderStrip() {
     <section className="py-8 md:py-10" aria-label="Browse by provider">
       <div className="mb-6 flex items-baseline gap-4 px-5 md:px-12 lg:px-16">
         <h2 className="font-display text-3xl md:text-4xl">Browse by provider</h2>
-        <span className="hidden text-xs uppercase text-muted-foreground sm:inline">Filter the collection by service</span>
         <Link
           to="/movies"
-          className="ml-auto shrink-0 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+          className="ml-auto shrink-0 text-xs text-muted-foreground transition-colors hover:text-primary"
         >
           View all
         </Link>
@@ -39,7 +38,7 @@ export function ProviderStrip() {
               search={{ provider: p.provider_id }}
               className="group flex w-24 shrink-0 flex-col items-center gap-3 md:w-28"
             >
-              <span className="block h-20 w-20 overflow-hidden rounded-2xl shadow-poster ring-1 ring-white/10 transition duration-300 group-hover:-translate-y-1 group-hover:ring-primary/50 md:h-24 md:w-24">
+              <span className="block h-16 w-16 overflow-hidden rounded-lg transition duration-300 group-hover:-translate-y-1 md:h-20 md:w-20">
                 {logo && (
                   <Img
                     src={logo}

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { discover, getGenres, getProviders } from "@/lib/tmdb.functions";
 import type { MediaItem, MediaType } from "@/lib/tmdb";
 import { MediaCard } from "./MediaCard";
+import { Button } from "@/components/ui/button";
 
 export interface CatalogFilters {
   genre?: number | undefined;
@@ -69,10 +70,10 @@ function FilterSelect({
         value={value}
         aria-label={label}
         onChange={(e) => onChange(e.target.value)}
-        className={`appearance-none rounded-full border py-2 pl-4 pr-9 text-xs font-medium outline-none transition-colors focus:border-primary/70 ${
+        className={`glass-panel max-w-full appearance-none rounded-md py-2.5 pl-4 pr-9 text-xs font-medium outline-none transition-colors focus:border-primary/70 ${
           active
-            ? "border-primary/60 bg-surface-2 text-foreground"
-            : "border-border bg-surface text-muted-foreground hover:border-primary/30 hover:text-foreground"
+            ? "border-primary/60 text-primary"
+            : "text-muted-foreground hover:border-primary/30 hover:text-foreground"
         }`}
       >
         {children}
@@ -183,16 +184,16 @@ export function BrowseCatalog({
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-28 md:px-10 md:pt-36">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary">Browse the collection</p>
+      <p className="text-[0.65rem] font-semibold uppercase text-primary">Browse the collection</p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
         <h1 className="font-display text-4xl md:text-5xl">{title}</h1>
         {totalLabel && (
-          <p className="pb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">{totalLabel} titles</p>
+            <p className="pb-1 text-xs text-muted-foreground">{totalLabel} titles</p>
         )}
       </div>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
 
-      <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label="Filters">
+      <div className="mt-8 flex flex-wrap items-center gap-2 border-y border-border py-5" role="group" aria-label="Filters">
         <FilterSelect
           label="Genre"
           value={filters.genre !== undefined ? String(filters.genre) : "any"}
@@ -261,14 +262,14 @@ export function BrowseCatalog({
         </FilterSelect>
 
         {hasActiveFilters && (
-          <button
+          <Button variant="ghost" size="sm"
             type="button"
             onClick={() => onFiltersChange({ ...defaultFilters })}
-            className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-xs font-medium text-primary transition-colors hover:text-foreground"
+            className="text-primary hover:bg-surface hover:text-foreground"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset
-          </button>
+          </Button>
         )}
       </div>
 

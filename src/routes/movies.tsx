@@ -12,6 +12,8 @@ export const Route = createFileRoute("/movies")({
       },
       { property: "og:title", content: "Movies — Browse Every Genre | Lumiere" },
       { property: "og:description", content: "Filter thousands of movies by genre, rating and release date." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MoviesPage,
@@ -47,7 +49,7 @@ function MoviesPage() {
     <BrowseCatalog
       type="movie"
       title="Movies"
-      subtitle="Every genre, sorted the way you like. Filter the full catalogue and press play."
+      subtitle="From modern classics to the latest releases."
       filters={filters ?? defaultFilters}
       onFiltersChange={onFiltersChange}
     />
