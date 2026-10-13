@@ -16,6 +16,8 @@ export const Route = createFileRoute("/search")({
       { name: "description", content: "Search the full Lumiere catalogue of movies and TV series by title, in seconds." },
       { property: "og:title", content: "Search Movies & Series | Lumiere" },
       { property: "og:description", content: "Find any movie or series in the Lumiere catalogue." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SearchPage,
@@ -43,14 +45,15 @@ function SearchPage() {
 
   return (
     <div className="min-h-screen px-4 pb-16 pt-28 md:px-10">
-      <h1 className="text-3xl font-extrabold md:text-4xl">Search</h1>
-      <div className="mt-5 flex max-w-xl items-center gap-3 rounded-full border border-border bg-surface px-4 py-3">
+      <h1 className="text-4xl md:text-6xl">Search</h1>
+      <div className="glass-panel mt-5 flex max-w-xl items-center gap-3 rounded-md px-4 py-3 focus-within:border-primary/60">
         <SearchIcon className="h-5 w-5 text-muted-foreground" />
         <input
           autoFocus
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           placeholder="Search for a movie or series…"
+          aria-label="Search catalogue"
           className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
         />
         {isFetching && <Loader2 className="h-4 w-4 animate-spin text-primary" />}

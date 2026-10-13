@@ -12,6 +12,8 @@ export const Route = createFileRoute("/series")({
       },
       { property: "og:title", content: "TV Series — Full Seasons & Episodes | Lumiere" },
       { property: "og:description", content: "Explore series by genre and rating, with full season and episode guides." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SeriesPage,
@@ -47,7 +49,7 @@ function SeriesPage() {
     <BrowseCatalog
       type="tv"
       title="Series"
-      subtitle="Binge-worthy shows with full season and episode guides, updated daily."
+      subtitle="Stories worth staying in for."
       filters={filters ?? defaultFilters}
       onFiltersChange={onFiltersChange}
     />

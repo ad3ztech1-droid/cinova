@@ -18,7 +18,7 @@ const homeQuery = queryOptions({
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(homeQuery),
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Lumiere — Stream Movies & Series in HD" },
       {
@@ -33,6 +33,12 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.trending.find((item) => item.backdrop_path)
+        ? [
+            { property: "og:image", content: img(loaderData.trending.find((item) => item.backdrop_path)?.backdrop_path ?? null, "w1280") ?? "" },
+            { name: "twitter:image", content: img(loaderData.trending.find((item) => item.backdrop_path)?.backdrop_path ?? null, "w1280") ?? "" },
+          ]
+        : []),
     ],
   }),
   component: Home,
