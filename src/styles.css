@@ -34,6 +34,9 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-gold: var(--gold);
+  --color-glass: var(--glass);
+  --color-glass-hover: var(--glass-hover);
+  --color-glass-border: var(--glass-border);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -105,6 +108,10 @@
   --gradient-gold: linear-gradient(135deg, var(--gold), var(--primary));
   --shadow-poster: 0 24px 60px -28px oklch(0 0 0 / 0.95);
   --shadow-glow: 0 0 0 1px oklch(0.77 0.105 85 / 0.18), 0 24px 70px -30px oklch(0.77 0.105 85 / 0.4);
+  --glass: oklch(0.18 0.006 85 / 72%);
+  --glass-hover: oklch(0.26 0.008 85 / 85%);
+  --glass-border: oklch(0.96 0.012 90 / 16%);
+  --shadow-glass: 0 12px 40px -16px oklch(0 0 0 / 65%), inset 0 1px 0 oklch(0.96 0.012 90 / 6%);
 }
 
 @layer base {
@@ -121,6 +128,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    letter-spacing: 0;
   }
 
   h1,
@@ -161,6 +169,32 @@
 @utility shadow-glow {
   box-shadow: var(--shadow-glow);
 }
+
+@utility glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+  @supports (backdrop-filter: blur(1px)) {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(125%);
+  }
+}
+
+@utility animate-fade-in {
+  animation: cinema-reveal 850ms ease-out both;
+}
+
+@keyframes cinema-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+html.tv .glass-panel { background: var(--surface); }
 
 /* TV mode: 10-foot UI with clear remote focus */
 html.tv { font-size: 125%; }
