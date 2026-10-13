@@ -91,9 +91,7 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-all duration-300 md:px-8 md:pt-4 ${
-        scrolled ? "" : ""
-      }`}
+      className="fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-all duration-300 md:px-8 md:pt-4"
     >
       <div className={`glass-panel mx-auto flex h-14 max-w-[1600px] items-center gap-3 rounded-lg px-3 transition-colors md:h-16 md:gap-5 md:px-6 ${scrolled ? "bg-glass-hover" : ""}`}>
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Lumiere home">
