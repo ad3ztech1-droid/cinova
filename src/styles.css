@@ -170,15 +170,6 @@
   box-shadow: var(--shadow-glow);
 }
 
-@utility glass-panel {
-  background: var(--surface);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-glass);
-  @supports (backdrop-filter: blur(1px)) {
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(125%);
-  }
-}
 
 @utility animate-fade-in {
   animation: cinema-reveal 850ms ease-out both;
@@ -194,7 +185,6 @@
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-html.tv .glass-panel { background: var(--surface); }
 
 /* TV mode: 10-foot UI with clear remote focus */
 html.tv { font-size: 125%; }
