@@ -70,15 +70,13 @@ function FilterSelect({
         value={value}
         aria-label={label}
         onChange={(e) => onChange(e.target.value)}
-        className={`glass-panel max-w-full appearance-none rounded-md py-2.5 pl-4 pr-9 text-xs font-medium outline-none transition-colors focus:border-primary/70 ${
-          active
-            ? "border-primary/60 text-primary"
-            : "text-muted-foreground hover:border-primary/30 hover:text-foreground"
+        className={`max-w-full appearance-none border-b border-border bg-transparent py-2 pl-1 pr-7 text-xs font-medium outline-none transition-colors focus:border-primary ${
+          active ? "border-primary text-primary" : "text-muted-foreground hover:text-foreground"
         }`}
       >
         {children}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 h-3.5 w-3.5 text-muted-foreground" />
+      <ChevronDown className="pointer-events-none absolute right-1 h-3.5 w-3.5 text-muted-foreground" />
     </label>
   );
 }
@@ -265,7 +263,7 @@ export function BrowseCatalog({
           <Button variant="ghost" size="sm"
             type="button"
             onClick={() => onFiltersChange({ ...defaultFilters })}
-            className="text-primary hover:bg-surface hover:text-foreground"
+            className="text-primary hover:text-foreground"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset

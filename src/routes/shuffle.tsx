@@ -68,10 +68,10 @@ function ShufflePage() {
             key={m.id}
             type="button"
             onClick={() => setMood(m)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+            className={`px-1 py-2 text-xs font-semibold transition-colors ${
               mood.id === m.id
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                ? "text-primary underline underline-offset-8"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {m.label}
@@ -85,10 +85,10 @@ function ShufflePage() {
             key={t}
             type="button"
             onClick={() => setType(t)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+            className={`px-1 py-2 text-xs font-semibold transition-colors ${
               type === t
-                ? "border-primary text-primary"
-                : "border-border text-muted-foreground hover:text-foreground"
+                ? "text-primary underline underline-offset-8"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t === "movie" ? "Movies" : "Series"}
@@ -98,7 +98,7 @@ function ShufflePage() {
           type="button"
           onClick={shuffle}
           disabled={loading}
-          className="ml-auto inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.03] disabled:opacity-60"
+          className="ml-auto inline-flex items-center gap-2 px-2 py-3 text-sm font-bold text-primary underline-offset-8 transition-colors hover:underline disabled:opacity-60"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Dices className="h-4 w-4" />}
           {pick ? "Shuffle again" : "Deal me a pick"}
@@ -107,7 +107,7 @@ function ShufflePage() {
 
       <div className="mt-10">
         {shuffling && (
-          <div className="flex aspect-video w-full items-center justify-center rounded-sm border border-border bg-surface">
+          <div className="flex aspect-video w-full items-center justify-center">
             <div className="flex flex-col items-center gap-3 text-muted-foreground">
               <Dices className="h-10 w-10 animate-bounce text-primary" />
               <p className="text-xs uppercase tracking-[0.3em]">Shuffling…</p>
@@ -116,7 +116,7 @@ function ShufflePage() {
         )}
 
         {!shuffling && pick && (
-          <div className="relative overflow-hidden rounded-sm border border-border bg-surface shadow-poster">
+          <div className="relative overflow-hidden">
             <div className="relative aspect-video w-full">
               <Img src={img(pick.backdrop_path, "w1280")} alt={pick.title} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
@@ -142,14 +142,14 @@ function ShufflePage() {
                   to="/watch/$type/$id"
                   params={{ type: pick.media_type, id: String(pick.id) }}
                   search={{}}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.03]"
+                  className="inline-flex items-center gap-2 px-2 py-3 text-sm font-bold text-primary underline-offset-8 transition-colors hover:underline"
                 >
                   <Play className="h-4 w-4 fill-current" /> Watch now
                 </Link>
                 <Link
                   to="/title/$type/$id"
                   params={{ type: pick.media_type, id: String(pick.id) }}
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-6 py-3 text-sm font-semibold transition-colors hover:border-primary/60"
+                  className="inline-flex items-center gap-2 px-2 py-3 text-sm font-semibold text-foreground underline-offset-8 transition-colors hover:underline"
                 >
                   <Clapperboard className="h-4 w-4" /> Details
                 </Link>
@@ -159,7 +159,7 @@ function ShufflePage() {
         )}
 
         {!shuffling && !pick && (
-          <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-sm border border-dashed border-border bg-surface/50 text-muted-foreground">
+          <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 text-muted-foreground">
             <Dices className="h-10 w-10 text-primary/60" />
             <p className="text-sm">Choose a mood and hit the button — one pick, no scrolling.</p>
           </div>

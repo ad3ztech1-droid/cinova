@@ -93,7 +93,11 @@ export function SiteHeader() {
     <header
       className="fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-all duration-300 md:px-8 md:pt-4"
     >
-      <div className={`glass-panel mx-auto flex h-14 max-w-[1600px] items-center gap-3 rounded-lg px-3 transition-colors md:h-16 md:gap-5 md:px-6 ${scrolled ? "bg-glass-hover" : ""}`}>
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background to-transparent transition-opacity duration-300 md:h-40 ${scrolled ? "opacity-100" : "opacity-80"}`}
+      />
+      <div className="relative mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-3 md:h-16 md:gap-5 md:px-6">
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Lumiere home">
           <span className="font-display text-2xl md:text-3xl">Lumiere</span>
         </Link>
@@ -115,7 +119,7 @@ export function SiteHeader() {
 
         <div ref={boxRef} className="relative ml-auto w-full max-w-[12rem] sm:max-w-xs">
           <form onSubmit={submit} className="flex items-center gap-2">
-            <div className="flex w-full items-center gap-2 rounded-md border border-glass-border bg-background/30 px-3 py-2 transition-colors focus-within:border-primary/60 focus-within:bg-surface">
+            <div className="flex w-full items-center gap-2 border-b border-border bg-transparent px-1 py-2 transition-colors focus-within:border-primary">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}
@@ -136,7 +140,7 @@ export function SiteHeader() {
           </form>
 
           {showSuggest && debounced.length > 1 && (
-            <div className="glass-panel absolute right-0 top-full z-50 mt-3 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg">
+            <div className="bg-background absolute right-0 top-full z-50 mt-3 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden py-2">
               {suggestions.length === 0 && !isFetching && (
                 <p className="px-4 py-5 text-center text-sm text-muted-foreground">No matches found.</p>
               )}
@@ -148,8 +152,8 @@ export function SiteHeader() {
                       type="button"
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(item)}
-                      className={`flex h-auto w-full justify-start rounded-none items-center gap-3 px-3 py-2 text-left transition-colors ${
-                        active === i ? "bg-surface-2" : "hover:bg-surface"
+                      className={`flex h-auto w-full justify-start items-center gap-3 px-3 py-2 text-left transition-colors ${
+                        active === i ? "text-primary" : "hover:text-foreground"
                       }`}
                     >
                       <div className="h-14 w-10 shrink-0 overflow-hidden rounded-md bg-surface-2">
@@ -179,7 +183,7 @@ export function SiteHeader() {
                     setShowSuggest(false);
                     navigate({ to: "/search", search: { q: q.trim() } });
                   }}
-                  className="block h-auto w-full truncate rounded-none border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:bg-surface"
+                  className="block h-auto w-full truncate border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:text-foreground"
                 >
                   See all results for “{q.trim()}”
                 </Button>
@@ -203,7 +207,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <nav aria-label="Mobile navigation" className="glass-panel mt-2 flex flex-col rounded-lg px-4 py-2 lg:hidden">
+        <nav aria-label="Mobile navigation" className="bg-background mt-2 flex flex-col px-4 py-2 lg:hidden">
           {links.map((l) => (
             <Link key={l.to} to={l.to} activeOptions={{ exact: l.to === "/" }} activeProps={{ className: "text-primary" }} className="py-2.5 text-sm font-medium text-muted-foreground">
               {l.label}

@@ -35,7 +35,7 @@ export function InstallAppButton({ className = "" }: { className?: string }) {
         const { outcome } = await deferred.userChoice;
         if (outcome === "accepted") setDeferred(null);
       }}
-      className={`inline-flex items-center gap-1.5 rounded-full border border-primary/50 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-primary underline-offset-4 transition-colors hover:underline ${className}`}
     >
       <Download className="h-3.5 w-3.5" />
       Install app

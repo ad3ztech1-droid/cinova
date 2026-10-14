@@ -77,7 +77,7 @@ function TitlePage() {
             <Img
               src={poster}
               alt={`${data.title} poster`}
-              className="hidden w-52 rounded-md shadow-poster md:block"
+              className="hidden w-52 md:block"
             />
           )}
           <div className="max-w-2xl">
@@ -99,9 +99,9 @@ function TitlePage() {
               {type === "tv" && data.number_of_seasons > 0 && <span>{data.number_of_seasons} seasons</span>}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
               {data.genres.map((g) => (
-                <span key={g.id} className="glass-panel rounded-sm px-3 py-1 text-xs">
+                <span key={g.id} className="text-xs text-muted-foreground">
                   {g.name}
                 </span>
               ))}
@@ -146,7 +146,7 @@ function TitlePage() {
             <select
               value={season}
               onChange={(e) => setSeason(Number(e.target.value))}
-              className="glass-panel rounded-md px-3 py-2 text-sm outline-none"
+              className="border-b border-border bg-transparent py-1 pr-2 text-sm outline-none"
               aria-label="Select season"
             >
               {data.seasons.map((s) => (
@@ -164,7 +164,7 @@ function TitlePage() {
                 to="/watch/$type/$id"
                 params={{ type: "tv", id: String(id) }}
                 search={{ s: ep.season_number, e: ep.episode_number }}
-                className="glass-panel group flex gap-3 rounded-md p-3 transition-colors hover:bg-glass-hover md:gap-4"
+                className="group flex gap-3 border-b border-border/60 p-1 transition-colors last:border-0 hover:text-primary md:gap-4"
               >
                 <div className="aspect-video w-24 shrink-0 overflow-hidden rounded-sm bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (

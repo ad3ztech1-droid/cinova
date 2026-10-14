@@ -86,7 +86,7 @@ function MixerPage() {
         {picks.map((p) => (
           <span
             key={`${p.media_type}-${p.id}`}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-surface py-1.5 pl-2 pr-3 text-xs font-semibold"
+            className="inline-flex items-center gap-2 py-1.5 pr-1 text-xs font-semibold"
           >
             <span className="h-7 w-5 overflow-hidden rounded-sm bg-surface-2">
               <Img src={img(p.poster_path, "w185")} alt="" className="h-full w-full object-cover" />
@@ -108,7 +108,7 @@ function MixerPage() {
 
         {picks.length < 3 && (
           <div ref={boxRef} className="relative w-full max-w-sm">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-surface/65 px-3 py-2 backdrop-blur-md focus-within:border-primary/60">
+            <div className="flex items-center gap-2 border-b border-border bg-transparent px-1 py-2 focus-within:border-primary">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}
@@ -125,7 +125,7 @@ function MixerPage() {
               {isFetching && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
             </div>
             {showSuggest && debounced.length > 1 && (
-              <div className="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-md border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
+              <div className="bg-background absolute left-0 top-full z-50 mt-2 w-full overflow-hidden py-2">
                 {suggestions.length === 0 && !isFetching && (
                   <p className="px-4 py-4 text-center text-sm text-muted-foreground">No matches found.</p>
                 )}
@@ -159,7 +159,7 @@ function MixerPage() {
           type="button"
           onClick={mix}
           disabled={picks.length === 0 || mixing}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.03] disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-2 py-3 text-sm font-bold text-primary underline-offset-8 transition-colors hover:underline disabled:opacity-50"
         >
           {mixing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           Mix my taste
