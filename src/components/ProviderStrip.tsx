@@ -38,7 +38,7 @@ export function ProviderStrip() {
               search={{ provider: p.provider_id }}
               className="group flex w-24 shrink-0 flex-col items-center gap-3 md:w-28"
             >
-              <span className="block h-16 w-16 overflow-hidden rounded-lg transition duration-300 group-hover:-translate-y-1 md:h-20 md:w-20">
+              <span className="block h-16 w-16 overflow-hidden transition duration-300 group-hover:-translate-y-1 md:h-20 md:w-20">
                 {logo && (
                   <Img
                     src={logo}
