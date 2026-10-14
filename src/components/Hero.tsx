@@ -27,16 +27,13 @@ export function Hero({ items }: { items: MediaItem[] }) {
   if (!item) return null;
 
   return (
-    <section className="relative h-[82svh] min-h-[560px] max-h-[960px] w-full overflow-hidden" aria-label="Lumiere selection" aria-roledescription="carousel">
+    <section className="relative h-[82svh] min-h-[560px] max-h-[960px] w-full overflow-hidden" aria-label="Featured titles" aria-roledescription="carousel">
       <div key={item.id} className="animate-fade-in absolute inset-0">
         <Img src={img(item.backdrop_path, "w1280")} alt={`${item.title} backdrop`} loading="eager" fetchPriority="high" className="h-full w-full object-cover" />
       </div>
       <div className="absolute inset-0 side-fade" />
       <div className="absolute inset-0 hero-fade" />
       <div className="relative mx-auto flex h-full max-w-[1600px] flex-col justify-end px-5 pb-20 pt-28 md:px-12 md:pb-24 lg:px-16">
-        <div className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase text-primary">
-          <span className="h-px w-8 bg-primary" /> Lumiere selection
-        </div>
         <h1 className="hero-title max-w-3xl break-words font-display text-5xl leading-[1.02] md:text-7xl lg:text-8xl">{item.title}</h1>
         <div className="mt-5 flex flex-wrap items-center gap-3 text-xs font-medium text-foreground/80">
           <span className="flex items-center gap-1 text-primary" title="TMDB rating"><Star className="h-3.5 w-3.5 fill-current" /> {item.vote_average.toFixed(1)}<span className="text-muted-foreground">/ 10</span></span>
