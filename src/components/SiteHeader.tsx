@@ -119,7 +119,7 @@ export function SiteHeader() {
 
         <div ref={boxRef} className="relative ml-auto w-full max-w-[12rem] sm:max-w-xs">
           <form onSubmit={submit} className="flex items-center gap-2">
-            <div className="flex w-full items-center gap-2 rounded-md border border-glass-border bg-background/30 px-3 py-2 transition-colors focus-within:border-primary/60 focus-within:bg-surface">
+            <div className="flex w-full items-center gap-2 border-b border-border bg-transparent px-1 py-2 transition-colors focus-within:border-primary">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}

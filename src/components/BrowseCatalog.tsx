@@ -76,7 +76,7 @@ function FilterSelect({
       >
         {children}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 h-3.5 w-3.5 text-muted-foreground" />
+      <ChevronDown className="pointer-events-none absolute right-1 h-3.5 w-3.5 text-muted-foreground" />
     </label>
   );
 }

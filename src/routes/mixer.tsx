@@ -108,7 +108,7 @@ function MixerPage() {
 
         {picks.length < 3 && (
           <div ref={boxRef} className="relative w-full max-w-sm">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-surface/65 px-3 py-2 backdrop-blur-md focus-within:border-primary/60">
+            <div className="flex items-center gap-2 border-b border-border bg-transparent px-1 py-2 focus-within:border-primary">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}

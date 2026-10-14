@@ -241,7 +241,7 @@ function WatchPage() {
           <button
             onClick={toggleFullscreen}
             aria-label={isFullscreen ? "Exit full screen" : "Watch full screen"}
-            className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-black/90"
+            className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-foreground drop-shadow-md transition-colors hover:text-primary"
           >
             {isFullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
             {isFullscreen ? "Exit" : "Full screen"}

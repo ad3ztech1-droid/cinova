@@ -54,7 +54,7 @@ function ContinueWatching() {
         <Button variant="ghost" size="sm"
           type="button"
           onClick={clearHistory}
-          className="ml-auto text-muted-foreground hover:bg-surface hover:text-primary"
+          className="ml-auto text-muted-foreground hover:text-primary"
         >
           Clear all
         </Button>

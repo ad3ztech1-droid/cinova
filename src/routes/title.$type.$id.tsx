@@ -99,9 +99,9 @@ function TitlePage() {
               {type === "tv" && data.number_of_seasons > 0 && <span>{data.number_of_seasons} seasons</span>}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
               {data.genres.map((g) => (
-                <span key={g.id} className="glass-panel rounded-sm px-3 py-1 text-xs">
+                <span key={g.id} className="text-xs text-muted-foreground">
                   {g.name}
                 </span>
               ))}

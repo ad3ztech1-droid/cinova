@@ -85,10 +85,10 @@ function ShufflePage() {
             key={t}
             type="button"
             onClick={() => setType(t)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+            className={`px-1 py-2 text-xs font-semibold transition-colors ${
               type === t
-                ? "border-primary text-primary"
-                : "border-border text-muted-foreground hover:text-foreground"
+                ? "text-primary underline underline-offset-8"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t === "movie" ? "Movies" : "Series"}
