@@ -68,10 +68,10 @@ function ShufflePage() {
             key={m.id}
             type="button"
             onClick={() => setMood(m)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+            className={`px-1 py-2 text-xs font-semibold transition-colors ${
               mood.id === m.id
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                ? "text-primary underline underline-offset-8"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {m.label}

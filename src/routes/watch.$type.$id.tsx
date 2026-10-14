@@ -212,8 +212,8 @@ function WatchPage() {
       <div className="mt-4 flex flex-wrap gap-2 px-4 md:px-10">
         <button
           onClick={() => setMode("full")}
-          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-            mode === "full" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          className={`inline-flex items-center gap-2 px-1 py-2 text-sm font-semibold transition-colors ${
+            mode === "full" ? "text-primary underline underline-offset-8" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Film className="h-4 w-4" /> {type === "tv" ? "Full episode" : "Full movie"}
@@ -221,8 +221,8 @@ function WatchPage() {
         <button
           onClick={() => setMode("trailer")}
           disabled={playable.length === 0}
-          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
-            mode === "trailer" ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface/60 hover:bg-surface-2"
+          className={`inline-flex items-center gap-2 px-1 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
+            mode === "trailer" ? "text-primary underline underline-offset-8" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Play className="h-4 w-4 fill-current" /> Trailers

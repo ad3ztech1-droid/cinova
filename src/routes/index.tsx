@@ -63,7 +63,7 @@ function ContinueWatching() {
         {items.map((i) => (
           <div
             key={`${i.media_type}-${i.id}`}
-            className="group relative w-[78vw] max-w-sm shrink-0 overflow-hidden rounded-sm bg-surface shadow-poster md:w-80"
+            className="group relative w-[78vw] max-w-sm shrink-0 overflow-hidden md:w-80"
           >
             <Link
               to="/watch/$type/$id"

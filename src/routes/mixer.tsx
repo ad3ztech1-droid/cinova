@@ -86,7 +86,7 @@ function MixerPage() {
         {picks.map((p) => (
           <span
             key={`${p.media_type}-${p.id}`}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-surface py-1.5 pl-2 pr-3 text-xs font-semibold"
+            className="inline-flex items-center gap-2 py-1.5 pr-1 text-xs font-semibold"
           >
             <span className="h-7 w-5 overflow-hidden rounded-sm bg-surface-2">
               <Img src={img(p.poster_path, "w185")} alt="" className="h-full w-full object-cover" />

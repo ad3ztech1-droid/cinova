@@ -3,7 +3,7 @@ import { Clapperboard } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border bg-surface/40 px-5 py-14 md:px-12 lg:px-16">
+    <footer className="mt-16 border-t border-border px-5 py-14 md:px-12 lg:px-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:justify-between">
         <div className="max-w-sm">
           <div className="flex items-center gap-2">

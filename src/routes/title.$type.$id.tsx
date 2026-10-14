@@ -77,7 +77,7 @@ function TitlePage() {
             <Img
               src={poster}
               alt={`${data.title} poster`}
-              className="hidden w-52 rounded-md shadow-poster md:block"
+              className="hidden w-52 md:block"
             />
           )}
           <div className="max-w-2xl">

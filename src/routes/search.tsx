@@ -46,7 +46,7 @@ function SearchPage() {
   return (
     <div className="min-h-screen px-4 pb-16 pt-28 md:px-10">
       <h1 className="text-4xl md:text-6xl">Search</h1>
-      <div className="glass-panel mt-5 flex max-w-xl items-center gap-3 rounded-md px-4 py-3 focus-within:border-primary/60">
+      <div className="mt-5 flex max-w-xl items-center gap-3 border-b border-border px-1 py-3 focus-within:border-primary">
         <SearchIcon className="h-5 w-5 text-muted-foreground" />
         <input
           autoFocus
