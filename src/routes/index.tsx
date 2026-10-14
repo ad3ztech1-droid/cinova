@@ -98,7 +98,7 @@ function ContinueWatching() {
               aria-label={`Remove ${i.title} from continue watching`}
               onClick={() => removeWatch(i.id, i.media_type)}
               title={`Remove ${i.title}`}
-              className="absolute right-2 top-2 z-10 h-8 w-8 opacity-100 transition-all hover:text-primary md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+              className="absolute right-2 top-2 z-10 h-8 w-8 text-foreground drop-shadow-md opacity-100 transition-all hover:text-primary md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
             >
               <X className="h-4 w-4" />
             </Button>

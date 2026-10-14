@@ -125,7 +125,7 @@ function MixerPage() {
               {isFetching && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
             </div>
             {showSuggest && debounced.length > 1 && (
-              <div className="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-md border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
+              <div className="bg-background absolute left-0 top-full z-50 mt-2 w-full overflow-hidden py-2">
                 {suggestions.length === 0 && !isFetching && (
                   <p className="px-4 py-4 text-center text-sm text-muted-foreground">No matches found.</p>
                 )}

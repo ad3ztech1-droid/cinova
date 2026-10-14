@@ -146,7 +146,7 @@ function TitlePage() {
             <select
               value={season}
               onChange={(e) => setSeason(Number(e.target.value))}
-              className="glass-panel rounded-md px-3 py-2 text-sm outline-none"
+              className="border-b border-border bg-transparent py-1 pr-2 text-sm outline-none"
               aria-label="Select season"
             >
               {data.seasons.map((s) => (

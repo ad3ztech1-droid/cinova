@@ -140,7 +140,7 @@ export function SiteHeader() {
           </form>
 
           {showSuggest && debounced.length > 1 && (
-            <div className="glass-panel absolute right-0 top-full z-50 mt-3 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg">
+            <div className="bg-background absolute right-0 top-full z-50 mt-3 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden py-2">
               {suggestions.length === 0 && !isFetching && (
                 <p className="px-4 py-5 text-center text-sm text-muted-foreground">No matches found.</p>
               )}

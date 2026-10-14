@@ -294,8 +294,8 @@ function WatchPage() {
               <button
                 key={s.url}
                 onClick={() => setSourceIndex(i)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  i === sourceIndex ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
+                className={`px-1 py-1.5 text-xs font-semibold transition-colors ${
+                  i === sourceIndex ? "text-primary underline underline-offset-4" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {s.name || `Server ${i + 1}`}

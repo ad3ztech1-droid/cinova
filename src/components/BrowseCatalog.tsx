@@ -263,7 +263,7 @@ export function BrowseCatalog({
           <Button variant="ghost" size="sm"
             type="button"
             onClick={() => onFiltersChange({ ...defaultFilters })}
-            className="text-primary hover:bg-surface hover:text-foreground"
+            className="text-primary hover:text-foreground"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset
