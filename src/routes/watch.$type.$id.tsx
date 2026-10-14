@@ -306,7 +306,7 @@ function WatchPage() {
               href={playerUrl}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-border bg-surface/60 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-surface-2"
+              className="px-1 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
             >
               Open player in new tab
             </a>
@@ -323,8 +323,8 @@ function WatchPage() {
         <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span>{year(data.release_date) || "TBA"}</span>
           {data.runtime ? <span>{runtimeLabel(data.runtime)}</span> : null}
-          <span className="rounded border border-border px-1.5 py-0.5 text-xs uppercase">{type}</span>
-          {active && <span className="rounded border border-border px-1.5 py-0.5 text-xs">{active.type}</span>}
+          <span className="text-xs uppercase tracking-wider">{type}</span>
+          {active && <span className="text-xs">{active.type}</span>}
         </div>
         <p className="mt-4 max-w-3xl text-sm text-foreground/80">
           {currentEp?.overview || data.overview}
@@ -339,8 +339,8 @@ function WatchPage() {
               <button
                 key={v.key}
                 onClick={() => { setMode("trailer"); navigate({ search: (prev) => ({ ...prev, v: v.key }) }); }}
-                className={`w-56 shrink-0 rounded-xl border p-3 text-left transition-colors ${
-                  active?.key === v.key ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
+                className={`w-56 shrink-0 p-1 text-left transition-colors ${
+                  active?.key === v.key ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <span className="flex items-center gap-2 text-xs font-semibold">
@@ -360,7 +360,7 @@ function WatchPage() {
             <select
               value={seasonNumber}
               onChange={(ev) => navigate({ search: (prev) => ({ ...prev, s: Number(ev.target.value), e: 1 }) })}
-              className="rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
+              className="border-b border-border bg-transparent py-1 pr-2 text-sm outline-none"
               aria-label="Select season"
             >
               {data.seasons.map((s) => (
@@ -376,8 +376,8 @@ function WatchPage() {
               <button
                 key={ep.id}
                 onClick={() => navigate({ search: (prev) => ({ ...prev, s: ep.season_number, e: ep.episode_number }) })}
-                className={`flex gap-4 rounded-xl border p-3 text-left transition-colors ${
-                  currentEp?.id === ep.id ? "border-primary bg-surface-2" : "border-border bg-surface/60 hover:bg-surface-2"
+                className={`flex gap-4 border-b border-border/60 p-1 text-left transition-colors last:border-0 ${
+                  currentEp?.id === ep.id ? "text-primary" : "hover:text-primary"
                 }`}
               >
                 <div className="aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-surface-2 sm:w-40">

@@ -152,8 +152,8 @@ export function SiteHeader() {
                       type="button"
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(item)}
-                      className={`flex h-auto w-full justify-start rounded-none items-center gap-3 px-3 py-2 text-left transition-colors ${
-                        active === i ? "bg-surface-2" : "hover:bg-surface"
+                      className={`flex h-auto w-full justify-start items-center gap-3 px-3 py-2 text-left transition-colors ${
+                        active === i ? "text-primary" : "hover:text-foreground"
                       }`}
                     >
                       <div className="h-14 w-10 shrink-0 overflow-hidden rounded-md bg-surface-2">
@@ -183,7 +183,7 @@ export function SiteHeader() {
                     setShowSuggest(false);
                     navigate({ to: "/search", search: { q: q.trim() } });
                   }}
-                  className="block h-auto w-full truncate rounded-none border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:bg-surface"
+                  className="block h-auto w-full truncate border-t border-border px-4 py-2.5 text-left text-xs font-medium text-primary hover:text-foreground"
                 >
                   See all results for “{q.trim()}”
                 </Button>
@@ -207,7 +207,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <nav aria-label="Mobile navigation" className="glass-panel mt-2 flex flex-col rounded-lg px-4 py-2 lg:hidden">
+        <nav aria-label="Mobile navigation" className="bg-background mt-2 flex flex-col px-4 py-2 lg:hidden">
           {links.map((l) => (
             <Link key={l.to} to={l.to} activeOptions={{ exact: l.to === "/" }} activeProps={{ className: "text-primary" }} className="py-2.5 text-sm font-medium text-muted-foreground">
               {l.label}

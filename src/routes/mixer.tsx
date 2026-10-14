@@ -159,7 +159,7 @@ function MixerPage() {
           type="button"
           onClick={mix}
           disabled={picks.length === 0 || mixing}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.03] disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-2 py-3 text-sm font-bold text-primary underline-offset-8 transition-colors hover:underline disabled:opacity-50"
         >
           {mixing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           Mix my taste

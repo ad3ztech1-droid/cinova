@@ -164,7 +164,7 @@ function TitlePage() {
                 to="/watch/$type/$id"
                 params={{ type: "tv", id: String(id) }}
                 search={{ s: ep.season_number, e: ep.episode_number }}
-                className="glass-panel group flex gap-3 rounded-md p-3 transition-colors hover:bg-glass-hover md:gap-4"
+                className="group flex gap-3 border-b border-border/60 p-1 transition-colors last:border-0 hover:text-primary md:gap-4"
               >
                 <div className="aspect-video w-24 shrink-0 overflow-hidden rounded-sm bg-surface-2 sm:w-40">
                   {img(ep.still_path, "w342") && (
