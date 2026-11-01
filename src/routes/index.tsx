@@ -82,8 +82,8 @@ function ContinueWatching() {
                   <Img src={img(i.backdrop_path, "w780")} alt={i.title} className="h-full w-full object-cover" />
                 )}
               </div>
-              <div className="absolute inset-0 flex items-center justify-center bg-background/40 opacity-0 transition-opacity group-hover:opacity-100">
-                <Play className="h-9 w-9 fill-current text-primary" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                <Play className="h-9 w-9 fill-current text-primary drop-shadow-md" />
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background to-transparent p-3">
                 <p className="truncate text-sm font-semibold">{i.title}</p>
