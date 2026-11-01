@@ -171,14 +171,6 @@
 }
 
 
-@utility animate-fade-in {
-  animation: cinema-reveal 850ms ease-out both;
-}
-
-@keyframes cinema-reveal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
