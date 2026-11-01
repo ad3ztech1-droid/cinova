@@ -278,7 +278,7 @@ export function BrowseCatalog({
         {listQuery.isLoading &&
           items.length === 0 &&
           Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="aspect-[2/3] animate-pulse rounded-md bg-surface" aria-hidden="true" />
+            <div key={i} className="aspect-[2/3] rounded-md bg-surface" aria-hidden="true" />
           ))}
       </div>
 

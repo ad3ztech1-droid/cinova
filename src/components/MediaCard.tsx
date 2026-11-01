@@ -24,8 +24,8 @@ export function MediaCard({ item, className = "" }: { item: MediaItem; className
             </div>
           }
         />
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/35 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          <Play className="h-8 w-8 fill-current text-primary" />
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <Play className="h-8 w-8 fill-current text-primary drop-shadow-md" />
         </span>
       </div>
       <div className="pt-3">

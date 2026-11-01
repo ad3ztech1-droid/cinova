@@ -28,7 +28,7 @@ export function Hero({ items }: { items: MediaItem[] }) {
 
   return (
     <section className="relative h-[82svh] min-h-[560px] max-h-[960px] w-full overflow-hidden" aria-label="Featured titles" aria-roledescription="carousel">
-      <div key={item.id} className="animate-fade-in absolute inset-0">
+      <div key={item.id} className="absolute inset-0">
         <Img src={img(item.backdrop_path, "w1280")} alt={`${item.title} backdrop`} loading="eager" fetchPriority="high" className="h-full w-full object-cover" />
       </div>
       <div className="absolute inset-0 side-fade" />

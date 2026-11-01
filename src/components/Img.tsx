@@ -67,7 +67,7 @@ export function Img({ src, fallback = null, alt = "", className = "", ...rest }:
       alt={alt}
       referrerPolicy="no-referrer"
       decoding="async"
-      className={`${className} ${loaded ? "" : "animate-pulse bg-surface-2"}`}
+      className={`${className} ${loaded ? "" : "bg-surface-2"}`}
       onLoad={(e) => {
         setLoaded(true);
         rest.onLoad?.(e);
