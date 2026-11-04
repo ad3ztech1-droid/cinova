@@ -1,11 +1,10 @@
 import { Img } from "@/components/Img";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Info, Play, Film, Maximize, Minimize } from "lucide-react";
 import { z } from "zod";
 import { getDetail, getSeason } from "@/lib/tmdb.functions";
-import { getStreamSources } from "@/lib/stream.functions";
 import { img, runtimeLabel, year, type MediaType } from "@/lib/tmdb";
 import { recordWatch, type HistoryEntry } from "@/lib/my-list";
 
@@ -50,6 +49,8 @@ export const Route = createFileRoute("/watch/$type/$id")({
   component: WatchPage,
 });
 
+const CINESRC_ORIGIN = "https://cinesrc.st";
+
 function WatchPage() {
   const params = Route.useParams();
   const search = Route.useSearch();
@@ -71,7 +72,6 @@ function WatchPage() {
   const currentEp = episodes.find((ep) => ep.episode_number === search.e) ?? episodes[0];
 
   const [mode, setMode] = useState<"full" | "trailer">("full");
-  const [sourceIndex, setSourceIndex] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -123,7 +123,116 @@ function WatchPage() {
   };
   const episodeNumber = currentEp?.episode_number ?? search.e ?? 1;
 
-  // Record into Continue Watching, updating progress while the page is open.
+  // Single CineSrc player. The accent colour matches the Lumiere gold.
+  const cinesrcUrlFor = useCallback(
+    (season: number, episode: number) => {
+      const params = new URLSearchParams({
+        color: "#D9B45B",
+        autonext: "true",
+        autoplay: "true",
+      });
+      const base =
+        type === "tv"
+          ? `${CINESRC_ORIGIN}/embed/tv/${id}?s=${season}&e=${episode}`
+          : `${CINESRC_ORIGIN}/embed/movie/${id}`;
+      return `${base}${base.includes("?") ? "&" : "?"}${params.toString()}`;
+    },
+    [type, id],
+  );
+
+  const cinesrcUrl = useMemo(() => cinesrcUrlFor(seasonNumber, episodeNumber), [cinesrcUrlFor, seasonNumber, episodeNumber]);
+
+  // The iframe keeps its own lifecycle: URL changes only on user-driven
+  // navigation or a player-initiated episode switch we must load ourselves.
+  const [iframeUrl, setIframeUrl] = useState(cinesrcUrl);
+  const [frameKey, setFrameKey] = useState(0);
+  const [streamError, setStreamError] = useState<string | null>(null);
+  const [playerReady, setPlayerReady] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
+  const suppressSyncRef = useRef<string | null>(null);
+  const progressRef = useRef<{ currentTime: number; duration: number } | null>(null);
+
+  useEffect(() => {
+    if (suppressSyncRef.current === cinesrcUrl) {
+      // Player switched episodes internally; the iframe must not be replaced.
+      suppressSyncRef.current = null;
+      return;
+    }
+    setIframeUrl(cinesrcUrl);
+  }, [cinesrcUrl]);
+
+  useEffect(() => {
+    setStreamError(null);
+    setPlayerReady(false);
+    setShowLoading(true);
+    const fallback = window.setTimeout(() => setShowLoading(false), 10000);
+    return () => window.clearTimeout(fallback);
+  }, [iframeUrl, frameKey]);
+
+  // CineSrc player events: readiness, real playback progress, errors and
+  // episode changes inside the player.
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== CINESRC_ORIGIN) return;
+      const payload = event.data as {
+        type?: string;
+        error?: unknown;
+        currentTime?: number;
+        duration?: number;
+        season?: number;
+        episode?: number;
+        internalNavigation?: boolean;
+      } | null;
+      if (!payload || typeof payload !== "object") return;
+      if (typeof payload.type !== "string" || !payload.type.startsWith("cinesrc:")) return;
+
+      switch (payload.type) {
+        case "cinesrc:ready":
+          setPlayerReady(true);
+          setShowLoading(false);
+          break;
+        case "cinesrc:play":
+          setShowLoading(false);
+          break;
+        case "cinesrc:timeupdate":
+          if (
+            typeof payload.currentTime === "number" &&
+            typeof payload.duration === "number" &&
+            payload.duration > 0
+          ) {
+            progressRef.current = { currentTime: payload.currentTime, duration: payload.duration };
+          }
+          break;
+        case "cinesrc:error": {
+          const message =
+            typeof payload.error === "string" && payload.error
+              ? payload.error
+              : "This title is not available to stream right now.";
+          setStreamError(message);
+          setShowLoading(false);
+          break;
+        }
+        case "cinesrc:nextepisode": {
+          const s = typeof payload.season === "number" ? payload.season : undefined;
+          const e = typeof payload.episode === "number" ? payload.episode : undefined;
+          if (!s || !e) break;
+          if (payload.internalNavigation) {
+            // Player already switched: sync the page only, never reload the iframe.
+            suppressSyncRef.current = cinesrcUrlFor(s, e);
+          } else {
+            setFrameKey((k) => k + 1);
+            setIframeUrl(cinesrcUrlFor(s, e));
+          }
+          navigate({ search: (prev) => ({ ...prev, s, e }) });
+          break;
+        }
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [navigate, cinesrcUrlFor]);
+
+  // Record into Continue Watching, preferring the player's real playback time.
   useEffect(() => {
     const totalSecs = (data.runtime ?? (type === "tv" ? 45 : 120)) * 60;
     const start = Date.now();
@@ -132,8 +241,11 @@ function WatchPage() {
         ? `S${seasonNumber} E${episodeNumber}${currentEp?.name ? ` — ${currentEp.name}` : ""}`
         : undefined;
     const save = () => {
+      const live = progressRef.current;
       const elapsed = (Date.now() - start) / 1000;
-      const progress = Math.max(2, Math.min(95, (elapsed / totalSecs) * 100));
+      const progress = live && live.duration > 0
+        ? Math.max(2, Math.min(95, (live.currentTime / live.duration) * 100))
+        : Math.max(2, Math.min(95, (elapsed / totalSecs) * 100));
       const entry: Omit<HistoryEntry, "watchedAt"> = {
         id,
         media_type: type,
@@ -155,47 +267,12 @@ function WatchPage() {
       save();
     };
   }, [type, id, seasonNumber, episodeNumber, currentEp?.name, data.title, data.overview, data.poster_path, data.backdrop_path, data.vote_average, data.release_date, data.runtime]);
-  const stream = useQuery({
-    queryKey: ["stream", type, id, type === "tv" ? seasonNumber : 0, type === "tv" ? episodeNumber : 0],
-    queryFn: () =>
-      getStreamSources({
-        data:
-          type === "tv"
-            ? { type, id, season: seasonNumber, episode: episodeNumber }
-            : { type, id },
-      }),
-    staleTime: 1000 * 60 * 10,
-  });
-  // Multiple frameable players, best-first; auto-failover picks the next one
-  // if the current server never renders.
-  const sources = (stream.data?.sources ?? []).map((s, i) => ({
-    name: s.name || `Server ${i + 1}`,
-    url: s.url,
-  }));
 
-
-  const sourceKey = sources.map((s) => s.url).join("|");
-  const activeSource = sources[sourceIndex] ?? sources[0];
-  const playerUrl = activeSource?.url ?? null;
-
-  // Always start on the best-ranked server whenever the title/episode changes.
-  useEffect(() => {
-    setSourceIndex(0);
-  }, [sourceKey]);
-
-  // If the chosen server never renders, silently roll over to the next one.
-  const [frameLoaded, setFrameLoaded] = useState(false);
-  useEffect(() => {
-    setFrameLoaded(false);
-  }, [playerUrl]);
-  useEffect(() => {
-    if (frameLoaded || !playerUrl || mode !== "full") return;
-    const total = sources.length;
-    const timer = window.setTimeout(() => {
-      setSourceIndex((i) => (i + 1 < total ? i + 1 : i));
-    }, 9000);
-    return () => window.clearTimeout(timer);
-  }, [frameLoaded, playerUrl, mode, sources.length]);
+  const retryPlayback = () => {
+    setStreamError(null);
+    setPlayerReady(false);
+    setFrameKey((k) => k + 1);
+  };
 
   return (
     <div className="min-h-screen pb-16 pt-20">
@@ -247,27 +324,17 @@ function WatchPage() {
             {isFullscreen ? "Exit" : "Full screen"}
           </button>
           {mode === "full" ? (
-            playerUrl ? (
+            iframeUrl ? (
               <iframe
-                key={playerUrl}
-                src={playerUrl}
+                key={frameKey}
+                src={iframeUrl}
                 title={`${data.title} — full stream`}
                 referrerPolicy="origin"
-                onLoad={() => setFrameLoaded(true)}
-
-
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                 allowFullScreen
                 className="h-full w-full border-0"
               />
-            ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
-                <Info className="h-6 w-6 text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  {stream.isLoading ? "Loading player…" : stream.data?.error ?? "This title is not available to stream right now."}
-                </p>
-              </div>
-            )
+            ) : null
           ) : active ? (
             <iframe
               key={active.key}
@@ -284,34 +351,34 @@ function WatchPage() {
               <p className="text-sm text-muted-foreground">No trailer is available for this title yet.</p>
             </div>
           )}
+          {mode === "full" && showLoading && !streamError && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">{playerReady ? "" : "Loading player…"}</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {mode === "full" && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 px-4 md:px-10">
-          {sources.length > 1 &&
-            sources.map((s, i) => (
-              <button
-                key={s.url}
-                onClick={() => setSourceIndex(i)}
-                className={`px-1 py-1.5 text-xs font-semibold transition-colors ${
-                  i === sourceIndex ? "text-primary underline underline-offset-4" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {s.name || `Server ${i + 1}`}
-              </button>
-            ))}
-          {playerUrl && (
+      {mode === "full" && streamError && (
+        <div className="mt-3 flex flex-wrap items-center gap-3 px-4 md:px-10">
+          <Info className="h-4 w-4 text-primary" />
+          <span className="text-xs text-muted-foreground">{streamError}</span>
+          <button
+            onClick={retryPlayback}
+            className="text-xs font-semibold text-primary underline underline-offset-4 transition-colors hover:text-foreground"
+          >
+            Try again
+          </button>
+          {iframeUrl && (
             <a
-              href={playerUrl}
+              href={iframeUrl}
               target="_blank"
               rel="noreferrer"
-              className="px-1 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
+              className="text-xs font-semibold text-muted-foreground underline underline-offset-4 transition-colors hover:text-primary"
             >
               Open player in new tab
             </a>
           )}
-          <span className="text-xs text-muted-foreground">If one server is unavailable, choose another source.</span>
         </div>
       )}
 
