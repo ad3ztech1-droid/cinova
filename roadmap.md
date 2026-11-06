@@ -8,3 +8,6 @@
 - [x] Strip filled backgrounds, borders, rounded outlines and shadows from buttons, chips, filters, panels and menus across the app, leaving plain text and symbols.
 - [x] Re-check every page on desktop and phone for layout breakage and errors.
 - [x] Re-test the live flows that used to rely on boxes: search suggestions, my list, continue watching, shuffle, mobile menu.
+
+# Hosting readiness
+- [ ] Prepare separate Netlify and Vercel builds and document the required private TMDB key setup.
