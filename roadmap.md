@@ -10,4 +10,4 @@
 - [x] Re-test the live flows that used to rely on boxes: search suggestions, my list, continue watching, shuffle, mobile menu.
 
 # Hosting readiness
-- [ ] Prepare separate Netlify and Vercel builds and document the required private TMDB key setup.
+- [x] Prepare separate Netlify and Vercel builds and document the required private TMDB key setup.
