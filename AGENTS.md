@@ -11,3 +11,6 @@
 ## Design architecture
 - Use semantic Obsidian & Gold tokens with Instrument Serif display and Work Sans interface typography for the premium editorial cinema direction.
 - Share glass surfaces and interaction states through global semantic tokens and Button variants; provide opaque fallbacks so older TV browsers remain readable.
+
+## Hosting architecture
+- Keep Netlify and Vercel deployments on Nitro server presets because TMDB requests require server-side environment variables and cannot run in a static-only export.
